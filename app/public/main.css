@@ -1,1 +1,11 @@
 /* MAIN CSS FILE */
+.starter-template {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+.main-cards h2{
+  text-align: center
+}
+.main-cards img{
+  width:100%;
+}
