@@ -19,6 +19,17 @@ app.get('/', (req,res) => {
   res.send(200, output);
 });
 
+// Serve Our Story
+app.get('/our-story', (req,res) => {
+  var template = swig.compileFile(path.join(__dirname+'/public/our_story.html'));
+  var output = template({
+      title: 'Kristine + Gareth',
+      authors: ['Paul', 'Jim', 'Jane']
+  });
+  res.send(200, output);
+});
+
+
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
