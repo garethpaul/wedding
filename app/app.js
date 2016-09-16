@@ -23,8 +23,7 @@ app.get('/', (req,res) => {
 app.get('/our-story', (req,res) => {
   var template = swig.compileFile(path.join(__dirname+'/public/our_story.html'));
   var output = template({
-      title: 'Kristine + Gareth',
-      authors: ['Paul', 'Jim', 'Jane']
+      title: 'Kristine + Gareth'
   });
   res.send(200, output);
 });
