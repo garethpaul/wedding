@@ -13,8 +13,7 @@ app.use('/static', express.static('public'));
 app.get('/', (req,res) => {
   var template = swig.compileFile(path.join(__dirname+'/public/index.html'));
   var output = template({
-      title: 'Kristine + Gareth',
-      authors: ['Paul', 'Jim', 'Jane']
+      title: 'Kristine + Gareth'
   });
   res.send(200, output);
 });
