@@ -27,6 +27,15 @@ app.get('/our-story', (req,res) => {
   res.send(200, output);
 });
 
+// The Big Day
+app.get('/the-big-day', (req,res) => {
+  var template = swig.compileFile(path.join(__dirname+'/public/the_big_day.html'));
+  var output = template({
+      title: 'Kristine + Gareth'
+  });
+  res.send(200, output);
+});
+
 
 // Start the server
 const PORT = process.env.PORT || 8080;
