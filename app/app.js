@@ -54,6 +54,15 @@ app.get('/explore', (req,res) => {
   res.send(200, output);
 });
 
+// Explore
+app.get('/song-requests', (req,res) => {
+  var template = swig.compileFile(path.join(__dirname+'/public/songs.html'));
+  var output = template({
+      title: 'Kristine + Gareth'
+  });
+  res.send(200, output);
+});
+
 
 // Start the server
 const PORT = process.env.PORT || 8080;
