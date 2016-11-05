@@ -11,7 +11,7 @@ app.use('/static', express.static('public'));
 
 // Serve Index
 app.get('/', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/index.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/index.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
@@ -20,7 +20,7 @@ app.get('/', (req,res) => {
 
 // Serve Our Story
 app.get('/our-story', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/our_story.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/our_story.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
@@ -29,7 +29,7 @@ app.get('/our-story', (req,res) => {
 
 // The Big Day
 app.get('/the-big-day', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/the_big_day.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/the_big_day.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
@@ -38,7 +38,7 @@ app.get('/the-big-day', (req,res) => {
 
 // Accomodation
 app.get('/accomodation', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/accomodation.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/accomodation.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
@@ -47,7 +47,7 @@ app.get('/accomodation', (req,res) => {
 
 // Explore
 app.get('/explore', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/explore.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/explore.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
@@ -56,7 +56,7 @@ app.get('/explore', (req,res) => {
 
 // Explore
 app.get('/song-requests', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/songs.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/songs.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
@@ -65,7 +65,7 @@ app.get('/song-requests', (req,res) => {
 
 // Registry
 app.get('/registry', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/registry.html'));
+  var template = swig.compileFile(path.join(__dirname+'/public/templates/registry.html'));
   var output = template({
       title: 'Kristine + Gareth'
   });
