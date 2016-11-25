@@ -3,41 +3,13 @@
 {% block title %}{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="starter-template">
-    <h1>KRISTINE + GARETH </h1>
-    <p class="lead">SAT 09.09.17</p>
-  </div>
-  <div class="row main-cards">
-    <div class="col-md-4 card">
-      <img src="/static/img/ourstory.png">
-      <h2>OUR STORY</h2>
-    </div>
-    <div class="col-md-4 card">
-      <img src="/static/img/thebigday.png">
-      <h2>THE BIG DAY</h2>
-    </div>
-    <div class="col-md-4 card">
-      <img src="/static/img/accom.png">
-      <h2>ACCOMODATION</h2>
-    </div>
-  </div>
-  <div class="row main-cards">
-    <div class="col-md-4 card">
-      <img src="/static/img/explore.png">
-      <h2>EXPLORE PARK CITY</h2>
-    </div>
-    <div class="col-md-4 card">
-      <img src="/static/img/songrequests.png">
-      <h2>SONG REQUESTS</h2>
-    </div>
-    <div class="col-md-4 card">
-      <img src="/static/img/registry.png">
-      <h2>REGISTRY</h2>
-    </div>
-  </div>
-  <div class="starter-template">
-    <p class="lead">SHARE YOUR PHOTOS WITH #TEAMGPJ</p>
-  </div>
+<div id="fullpage">
+    {% include 'main.html' %}
+    {% include 'our_story.html' %}
+    {% include 'the_big_day.html' %}
+    {% include 'accomodation.html' %}
+    {% include 'explore.html' %}
+    {% include 'songs.html' %}
+    {% include 'the_big_day.html' %}
 </div>
 {% endblock %}
