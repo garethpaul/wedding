@@ -16,7 +16,10 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.js"></script>
     <script type="text/javascript">
     $(document).ready(function() {
-      $('#fullpage').fullpage();
+      $('#fullpage').fullpage({
+        anchors: ['main', 'our-story', 'the-big-day', 'accomodation', 'explore', 'song-requests', 'registry']
+    });
+
     });
     </script>
   </body>
