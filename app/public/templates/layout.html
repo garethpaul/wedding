@@ -30,6 +30,23 @@
 
     ga('create', 'UA-48319445-4', 'auto');
     ga('send', 'pageview');
+
+    function handleOutboundLinkClicks(event) {
+      ga('send', 'event', {
+        eventCategory: 'Link Click',
+        eventAction: 'click',
+        eventLabel: event.target.href
+      });
+    }
+    // Feature detects Navigation Timing API support.
+    if (window.performance) {
+      // Gets the number of milliseconds since page load
+      // (and rounds the result since the value must be an integer).
+      var timeSincePageLoad = Math.round(performance.now());
+
+      // Sends the timing hit to Google Analytics.
+      ga('send', 'timing', 'JS Dependencies', 'load', timeSincePageLoad);
+    }
   </script>
   </body>
 </html>
