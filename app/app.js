@@ -22,7 +22,7 @@ app.get('/', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output)
 });
 
 // Serve Our Story
@@ -81,8 +81,10 @@ app.get('/registry', (req,res) => {
 
 // Start the server
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+var server = app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   console.log('Press Ctrl+C to quit.');
 });
+
+module.exports = server;
 // [END app]
