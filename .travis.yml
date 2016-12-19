@@ -1,9 +1,17 @@
 sudo: required
 language: node_js
 node_js:
-  - "6"
+- '6'
+before_install:
+- openssl aes-256-cbc -K $encrypted_fc27bb271239_key -iv $encrypted_fc27bb271239_iv
+  -in credentials.tar.gz.enc -out credentials.tar.gz -d
+- if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
+  fi
+- tar -xzf credentials.tar.gz
+- gcloud auth activate-service-account --key-file client-secret.json
 install:
-  - "cd app"
-  - npm install
+- gcloud config set project gpj-wedding
+- cd app
+- npm install
 script:
-  - npm test
+- npm test
