@@ -1,5 +1,8 @@
 sudo: required
 language: node_js
+cache:
+  directories:
+  - "$HOME/google-cloud-sdk/"
 node_js:
 - '6'
 before_install:
