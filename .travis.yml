@@ -15,3 +15,4 @@ install:
 - npm install
 script:
 - npm test
+- gcloud app deploy
