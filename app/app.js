@@ -5,9 +5,16 @@ const express = require('express');
 const app = express();
 const path = require("path");
 const swig  = require('swig');
+const helmet = require('helmet')
 
 // Utilize middleware for for serving files from public dir via /static
 app.use('/static', express.static('public'));
+
+app.use(helmet.hsts({
+      maxAge: 31536000000,
+      includeSubdomains: true,
+      force: true
+}));
 
 // Serve Index
 app.get('/', (req,res) => {

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "express": "4.14.0",
-    "swig": "~1.0"
+    "swig": "~1.0",
+    "helmet": "3.1.0"
   }
 }
