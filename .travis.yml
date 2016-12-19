@@ -20,4 +20,4 @@ install:
 - npm install
 script:
 - npm test
-- gcloud app deploy --project gpj-wedding
+- gcloud app deploy --project gpj-wedding --quiet
