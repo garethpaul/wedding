@@ -74,4 +74,4 @@ Keep changes small and tied to the project that is already present in this repos
 
 Prior README summary:
 
-> Wedding website <!-- README-OVERVIEW-IMAGE --> [![Build Status](https://travis-ci.org/garethpaul/wedding.svg?branch=master)](https://travis-ci.org/garethpaul/wedding)
+> Wedding website [![Build Status](https://travis-ci.org/garethpaul/wedding.svg?branch=master)](https://travis-ci.org/garethpaul/wedding)
