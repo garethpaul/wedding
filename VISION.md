@@ -40,7 +40,7 @@ Event sites can expose personal schedules, locations, guest information, and
 deployment secrets. Credentials should remain encrypted, and private event data
 should be reviewed before publishing.
 
-## What We Will Not Merge For Now
+## What We Will Not Merge (For Now)
 
 - Plaintext credentials
 - Private guest or RSVP data
