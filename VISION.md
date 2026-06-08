@@ -46,3 +46,6 @@ should be reviewed before publishing.
 - Private guest or RSVP data
 - Unreviewed personal-location changes
 - Dependency rewrites mixed with event content changes
+
+This list is a roadmap guardrail, not a permanent rule.
+Strong user demand and strong technical rationale can change it.
