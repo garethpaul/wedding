@@ -36,6 +36,11 @@ Contribution rules:
 
 ## Security And Responsible Use
 
+Canonical security policy and reporting:
+
+- [`SECURITY.md`](SECURITY.md)
+
+
 Event sites can expose personal schedules, locations, guest information, and
 deployment secrets. Credentials should remain encrypted, and private event data
 should be reviewed before publishing.
