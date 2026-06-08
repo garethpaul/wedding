@@ -1,5 +1,8 @@
 # wedding
 
+<!-- README-OVERVIEW-IMAGE -->
+![Project overview](docs/readme-overview.svg)
+
 ## Overview
 
 `garethpaul/wedding` is a static web project. Wedding stuff.
@@ -72,4 +75,3 @@ Keep changes small and tied to the project that is already present in this repos
 Prior README summary:
 
 > Wedding website <!-- README-OVERVIEW-IMAGE --> [![Build Status](https://travis-ci.org/garethpaul/wedding.svg?branch=master)](https://travis-ci.org/garethpaul/wedding)
-
