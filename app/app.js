@@ -7,14 +7,14 @@ const path = require("path");
 const swig  = require('swig');
 const helmet = require('helmet')
 
-// Utilize middleware for for serving files from public dir via /static
-app.use('/static', express.static('public'));
-
 app.use(helmet.hsts({
       maxAge: 31536000000,
       includeSubdomains: true,
       force: true
 }));
+
+// Utilize middleware for serving files from public dir via /static
+app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // Serve Index
 app.get('/', (req,res) => {
@@ -31,7 +31,7 @@ app.get('/our-story', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output);
 });
 
 // The Big Day
@@ -40,7 +40,7 @@ app.get('/the-big-day', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output);
 });
 
 // Accomodation
@@ -49,7 +49,7 @@ app.get('/accomodation', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output);
 });
 
 // Explore
@@ -58,7 +58,7 @@ app.get('/explore', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output);
 });
 
 // Explore
@@ -67,7 +67,7 @@ app.get('/song-requests', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output);
 });
 
 // Registry
@@ -76,15 +76,17 @@ app.get('/registry', (req,res) => {
   var output = template({
       title: 'Kristine + Gareth'
   });
-  res.send(200, output);
+  res.status(200).send(output);
 });
 
-// Start the server
-const PORT = process.env.PORT || 8080;
-var server = app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-  console.log('Press Ctrl+C to quit.');
-});
+if (require.main === module) {
+  // Start the server
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);
+    console.log('Press Ctrl+C to quit.');
+  });
+}
 
-module.exports = server;
+module.exports = app;
 // [END app]

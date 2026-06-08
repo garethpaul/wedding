@@ -28,23 +28,29 @@ Additional scan context:
 ### Prerequisites
 
 - Git
+- Node.js and npm
 
 ### Setup
 
 ```bash
 git clone https://github.com/garethpaul/wedding.git
 cd wedding
+cd app
+npm install
 ```
 
 The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
 
 ## Running or Using the Project
 
-- No single runtime entry point was identified. Start by reading the source files and manifests listed above.
+- Run `npm --prefix app start` from the repository root, or `npm start` from `app/`.
 
 ## Testing and Verification
 
-- No dedicated automated test command was identified from the checked-in files. Verify changes by running the relevant build or manually exercising the sample.
+- `make verify` runs static Express route checks and the npm test suite when `app/node_modules` is installed.
+- `make check` runs the same verification gate.
+- `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
+- `npm --prefix app test` runs the Mocha/Supertest suite after dependencies are installed.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 

@@ -1,23 +1,33 @@
 var request = require('supertest');
+var app = require('./app');
+
 describe('loading express', function () {
-  var server;
-  beforeEach(function () {
-    server = require('./app');
-  });
-  afterEach(function () {
-    server.close();
+  [
+    '/',
+    '/our-story',
+    '/the-big-day',
+    '/accomodation',
+    '/explore',
+    '/song-requests',
+    '/registry'
+  ].forEach(function (route) {
+    it('responds to ' + route, function testRoute(done) {
+      request(app)
+        .get(route)
+        .expect(200, done);
+    });
   });
 
-  // Check that main page loads
-  it('responds to /', function testSlash(done) {
-    request(server)
-      .get('/')
+  it('sets HSTS on static assets', function testStaticHsts(done) {
+    request(app)
+      .get('/static/css/main.less')
+      .expect('Strict-Transport-Security', /max-age=/)
       .expect(200, done);
   });
 
   // Check that something 404s
   it('404 everything else', function testPath(done) {
-    request(server)
+    request(app)
       .get('/foo/bar')
       .expect(404, done);
   });
