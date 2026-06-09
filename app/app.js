@@ -7,6 +7,8 @@ const path = require("path");
 const swig  = require('swig');
 const helmet = require('helmet')
 
+app.disable('x-powered-by');
+
 app.use(helmet.hsts({
       maxAge: 31536000000,
       includeSubdomains: true,

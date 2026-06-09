@@ -17,6 +17,7 @@ Priority:
 
 - Preserve the static route structure and templates
 - Keep encrypted credentials encrypted
+- Avoid exposing unnecessary implementation headers
 - Maintain deployment metadata and Travis context
 - Treat Swig and dependency versions as historical until documented
 
@@ -24,7 +25,7 @@ Next priorities:
 
 - Add setup notes for local development and deployment
 - Document how encrypted credentials are managed
-- Update Express response syntax in a compatibility pass
+- Review historical HTTP outbound links in event templates
 - Decide whether the site is archived or still deployable
 
 Contribution rules:

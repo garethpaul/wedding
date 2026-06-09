@@ -25,6 +25,17 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
+  it('does not expose Express implementation headers', function testPoweredBy(done) {
+    request(app)
+      .get('/')
+      .expect(function assertNoPoweredBy(response) {
+        if (response.headers['x-powered-by']) {
+          throw new Error('X-Powered-By must not be set');
+        }
+      })
+      .expect(200, done);
+  });
+
   // Check that something 404s
   it('404 everything else', function testPath(done) {
     request(app)

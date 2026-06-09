@@ -2,6 +2,7 @@
 
 ## 2026-06-08
 
+- Disabled Express `X-Powered-By` responses and added route/header coverage.
 - Replaced the tokenized Mapbox iframe with a tokenless embedded map and static template check.
 - Tightened docs-plan verification to require recorded `make check` evidence.
 - Added a local `make verify` gate with static Express route contract checks.
