@@ -31,6 +31,8 @@ assert(!specSource.includes('server.close()'), 'tests should not depend on closi
 assert(specSource.includes('/static/css/main.less'), 'tests must cover a static asset response');
 assert(specSource.includes('Strict-Transport-Security'), 'tests must assert HSTS on static assets');
 assert(fs.existsSync(planPath), 'wedding hardening plan must live under docs/plans');
-assert(fs.readFileSync(planPath, 'utf8').includes('status: completed'), 'wedding hardening plan must be completed');
+const planSource = fs.readFileSync(planPath, 'utf8');
+assert(planSource.toLowerCase().includes('status: completed'), 'wedding hardening plan must be completed');
+assert(planSource.includes('make check'), 'wedding hardening plan must document make check verification');
 
 console.log('wedding contracts passed');

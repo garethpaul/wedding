@@ -2,6 +2,7 @@
 
 ## 2026-06-08
 
+- Tightened docs-plan verification to require recorded `make check` evidence.
 - Added a local `make verify` gate with static Express route contract checks.
 - Updated Express routes to use `res.status(200).send(...)` instead of deprecated `res.send(200, ...)`.
 - Moved Helmet HSTS middleware before static asset serving and added static-asset header coverage.

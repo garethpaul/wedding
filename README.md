@@ -50,6 +50,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - `make verify` runs static Express route checks and the npm test suite when `app/node_modules` is installed.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
+- Completed maintenance plans live under `docs/plans` and are checked by
+  `make check`.
 - `npm --prefix app test` runs the Mocha/Supertest suite after dependencies are installed.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
@@ -71,6 +73,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
+- See `docs/plans/2026-06-08-wedding-express-hardening.md` for the current
+  Express hardening baseline.
 
 ## Contributing
 
