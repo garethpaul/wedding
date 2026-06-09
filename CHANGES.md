@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Added `X-Download-Options: noopen` before static asset handling.
+- Added static and runtime coverage for the download protection header.
 - Added a site-wide `Referrer-Policy: no-referrer` header before static asset
   handling.
 - Added static and runtime coverage for the referrer-policy header.

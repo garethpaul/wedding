@@ -48,8 +48,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 ## Testing and Verification
 
 - `make verify` runs static Express route/header checks, including browser
-  security and referrer policy headers, and the npm test suite when
-  `app/node_modules` is installed.
+  security, download protection, and referrer policy headers, and the npm test
+  suite when `app/node_modules` is installed.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
@@ -85,6 +85,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   no-sniff browser header coverage.
 - See `docs/plans/2026-06-09-wedding-referrer-policy.md` for site-wide
   referrer-policy coverage.
+- See `docs/plans/2026-06-09-wedding-download-options.md` for static asset
+  download-protection coverage.
 
 ## Contributing
 

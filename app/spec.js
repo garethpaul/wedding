@@ -26,6 +26,13 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
+  it('sets download protection headers on static assets', function testDownloadOptions(done) {
+    request(app)
+      .get('/static/css/main.less')
+      .expect('X-Download-Options', 'noopen')
+      .expect(200, done);
+  });
+
   it('sets clickjacking protection headers', function testFrameguard(done) {
     request(app)
       .get('/')
