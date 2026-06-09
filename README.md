@@ -49,8 +49,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - `make verify` runs static Express route/header checks, including browser
   security, download protection, legacy XSS protection, and referrer policy
-  headers, DNS prefetch control, and the npm test suite when
-  `app/node_modules` is installed.
+  headers, DNS prefetch control, Content Security Policy coverage, and the npm
+  test suite when `app/node_modules` is installed.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
@@ -92,6 +92,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   `X-XSS-Protection` header coverage.
 - See `docs/plans/2026-06-09-wedding-dns-prefetch-control.md` for DNS prefetch
   control coverage.
+- See `docs/plans/2026-06-09-wedding-content-security-policy.md` for the
+  site-wide Content Security Policy baseline.
 
 ## Contributing
 

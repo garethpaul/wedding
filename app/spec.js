@@ -61,6 +61,30 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
+  it('sets a content security policy for page assets', function testContentSecurityPolicy(done) {
+    request(app)
+      .get('/')
+      .expect(function assertContentSecurityPolicy(response) {
+        var policy = response.headers['content-security-policy'];
+        if (!policy) {
+          throw new Error('Content-Security-Policy must be set');
+        }
+        [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com https://www.google-analytics.com https://widget.zola.com",
+          "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://netdna.bootstrapcdn.com",
+          "frame-src https://www.openstreetmap.org",
+          "object-src 'none'",
+          "base-uri 'self'"
+        ].forEach(function assertDirective(directive) {
+          if (policy.indexOf(directive) === -1) {
+            throw new Error('Content-Security-Policy missing ' + directive);
+          }
+        });
+      })
+      .expect(200, done);
+  });
+
   it('does not expose Express implementation headers', function testPoweredBy(done) {
     request(app)
       .get('/')

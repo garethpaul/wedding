@@ -33,6 +33,9 @@ Helpful reports include:
 - Review found shell execution, subprocess, or dynamic evaluation surfaces; changes in those areas should receive security-focused review before merge.
 - Review found infrastructure, deployment, proxy, or cloud configuration; changes in those areas should receive security-focused review before merge.
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
+- The Express baseline sends browser security headers before static assets,
+  including a Content Security Policy that bounds the site's historical CDN,
+  analytics, registry-widget, and OpenStreetMap dependencies.
 
 ## Service and API Notes
 

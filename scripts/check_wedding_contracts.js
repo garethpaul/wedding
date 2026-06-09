@@ -15,6 +15,7 @@ const referrerPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedd
 const downloadOptionsPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-download-options.md');
 const xssProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-xss-protection.md');
 const dnsPrefetchPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-dns-prefetch-control.md');
+const contentSecurityPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-content-security-policy.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -37,12 +38,20 @@ assert(appSource.includes('app.use(helmet.ieNoOpen())'), 'Express must enable do
 assert(appSource.includes('app.use(helmet.xssFilter())'), 'Express must enable legacy XSS protection headers');
 assert(appSource.includes('app.use(helmet.dnsPrefetchControl())'), 'Express must disable DNS prefetching');
 assert(appSource.includes("app.use(helmet.referrerPolicy({ policy: 'no-referrer' }))"), 'Express must enable a no-referrer policy');
+assert(appSource.includes('app.use(helmet.contentSecurityPolicy({'), 'Express must enable a content security policy');
+assert(appSource.includes("defaultSrc: [\"'self'\"]"), 'CSP must default to same-origin resources');
+assert(appSource.includes("scriptSrc: [") && appSource.includes("'https://www.google-analytics.com'") && appSource.includes("'https://widget.zola.com'"), 'CSP must bound script sources to the historical page dependencies');
+assert(appSource.includes("styleSrc: [") && appSource.includes("'https://netdna.bootstrapcdn.com'") && appSource.includes("\"'unsafe-inline'\""), 'CSP must bound style sources while allowing legacy inline styles');
+assert(appSource.includes("frameSrc: ['https://www.openstreetmap.org']"), 'CSP must restrict frame sources to OpenStreetMap');
+assert(appSource.includes("objectSrc: [\"'none'\"]"), 'CSP must block plugin object content');
+assert(appSource.includes("baseUri: [\"'self'\"]"), 'CSP must restrict base URI changes');
 assert(appSource.indexOf('app.use(helmet.frameguard') < appSource.indexOf("app.use('/static'"), 'frameguard must run before static assets');
 assert(appSource.indexOf('app.use(helmet.noSniff') < appSource.indexOf("app.use('/static'"), 'no-sniff must run before static assets');
 assert(appSource.indexOf('app.use(helmet.ieNoOpen') < appSource.indexOf("app.use('/static'"), 'download protection must run before static assets');
 assert(appSource.indexOf('app.use(helmet.xssFilter') < appSource.indexOf("app.use('/static'"), 'XSS protection must run before static assets');
 assert(appSource.indexOf('app.use(helmet.dnsPrefetchControl') < appSource.indexOf("app.use('/static'"), 'DNS prefetch control must run before static assets');
 assert(appSource.indexOf('app.use(helmet.referrerPolicy') < appSource.indexOf("app.use('/static'"), 'referrer policy must run before static assets');
+assert(appSource.indexOf('app.use(helmet.contentSecurityPolicy') < appSource.indexOf("app.use('/static'"), 'content security policy must run before static assets');
 assert(appSource.indexOf('app.use(helmet.hsts') < appSource.indexOf("app.use('/static'"), 'helmet middleware must run before static assets');
 assert(
   appSource.includes("express.static(path.join(__dirname, 'public'))") ||
@@ -62,6 +71,9 @@ assert(specSource.includes('X-XSS-Protection'), 'tests must assert legacy XSS pr
 assert(specSource.includes('X-DNS-Prefetch-Control'), 'tests must assert DNS prefetch control on routed pages');
 assert(specSource.includes('X-Frame-Options'), 'tests must assert frameguard on routed pages');
 assert(specSource.includes('Referrer-Policy'), 'tests must assert referrer policy on routed pages');
+assert(specSource.includes('Content-Security-Policy'), 'tests must assert content security policy on routed pages');
+assert(specSource.includes("script-src 'self' 'unsafe-inline'"), 'tests must assert the CSP script directive');
+assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
@@ -82,5 +94,6 @@ assertCompletedPlan(referrerPolicyPlanPath, 'wedding referrer policy');
 assertCompletedPlan(downloadOptionsPlanPath, 'wedding download options');
 assertCompletedPlan(xssProtectionPlanPath, 'wedding XSS protection');
 assertCompletedPlan(dnsPrefetchPlanPath, 'wedding DNS prefetch control');
+assertCompletedPlan(contentSecurityPolicyPlanPath, 'wedding content security policy');
 
 console.log('wedding contracts passed');

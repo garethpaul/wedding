@@ -15,6 +15,33 @@ app.use(helmet.ieNoOpen());
 app.use(helmet.xssFilter());
 app.use(helmet.dnsPrefetchControl());
 app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
+app.use(helmet.contentSecurityPolicy({
+      directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+                  "'self'",
+                  "'unsafe-inline'",
+                  'https://cdnjs.cloudflare.com',
+                  'https://code.jquery.com',
+                  'https://maxcdn.bootstrapcdn.com',
+                  'https://www.google-analytics.com',
+                  'https://widget.zola.com'
+            ],
+            styleSrc: [
+                  "'self'",
+                  "'unsafe-inline'",
+                  'https://cdnjs.cloudflare.com',
+                  'https://maxcdn.bootstrapcdn.com',
+                  'https://netdna.bootstrapcdn.com'
+            ],
+            imgSrc: ["'self'", 'data:', 'https://www.google-analytics.com'],
+            fontSrc: ["'self'", 'https://netdna.bootstrapcdn.com'],
+            frameSrc: ['https://www.openstreetmap.org'],
+            connectSrc: ["'self'", 'https://www.google-analytics.com'],
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"]
+      }
+}));
 app.use(helmet.hsts({
       maxAge: 31536000000,
       includeSubdomains: true,

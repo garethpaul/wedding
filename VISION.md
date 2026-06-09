@@ -23,6 +23,8 @@ Priority:
 - Keep legacy XSS protection headers enabled before static assets
 - Keep DNS prefetching disabled before static assets
 - Keep referrer disclosure bounded for page and asset requests
+- Keep Content Security Policy coverage aligned with the historical CDN,
+  analytics, registry-widget, and map dependencies
 - Maintain deployment metadata and Travis context
 - Treat Swig and dependency versions as historical until documented
 
