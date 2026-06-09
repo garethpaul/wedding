@@ -33,6 +33,13 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
+  it('sets a restrictive referrer policy', function testReferrerPolicy(done) {
+    request(app)
+      .get('/')
+      .expect('Referrer-Policy', 'no-referrer')
+      .expect(200, done);
+  });
+
   it('does not expose Express implementation headers', function testPoweredBy(done) {
     request(app)
       .get('/')

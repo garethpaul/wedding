@@ -11,6 +11,7 @@ const expressPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-exp
 const mapPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-tokenless-map.md');
 const poweredByPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-powered-by-header.md');
 const browserHeadersPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-browser-headers.md');
+const referrerPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-referrer-policy.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -29,8 +30,10 @@ assert(!appSource.includes('res.send(200,'), 'Express routes must use res.status
 assert(appSource.includes("app.disable('x-powered-by')"), 'Express must disable the X-Powered-By header');
 assert(appSource.includes("app.use(helmet.frameguard({ action: 'deny' }))"), 'Express must enable frameguard');
 assert(appSource.includes('app.use(helmet.noSniff())'), 'Express must enable no-sniff headers');
+assert(appSource.includes("app.use(helmet.referrerPolicy({ policy: 'no-referrer' }))"), 'Express must enable a no-referrer policy');
 assert(appSource.indexOf('app.use(helmet.frameguard') < appSource.indexOf("app.use('/static'"), 'frameguard must run before static assets');
 assert(appSource.indexOf('app.use(helmet.noSniff') < appSource.indexOf("app.use('/static'"), 'no-sniff must run before static assets');
+assert(appSource.indexOf('app.use(helmet.referrerPolicy') < appSource.indexOf("app.use('/static'"), 'referrer policy must run before static assets');
 assert(appSource.indexOf('app.use(helmet.hsts') < appSource.indexOf("app.use('/static'"), 'helmet middleware must run before static assets');
 assert(
   appSource.includes("express.static(path.join(__dirname, 'public'))") ||
@@ -46,6 +49,7 @@ assert(specSource.includes('/static/css/main.less'), 'tests must cover a static 
 assert(specSource.includes('Strict-Transport-Security'), 'tests must assert HSTS on static assets');
 assert(specSource.includes('X-Content-Type-Options'), 'tests must assert no-sniff on static assets');
 assert(specSource.includes('X-Frame-Options'), 'tests must assert frameguard on routed pages');
+assert(specSource.includes('Referrer-Policy'), 'tests must assert referrer policy on routed pages');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
@@ -62,5 +66,6 @@ assertCompletedPlan(expressPlanPath, 'wedding hardening');
 assertCompletedPlan(mapPlanPath, 'wedding tokenless map');
 assertCompletedPlan(poweredByPlanPath, 'wedding powered-by header');
 assertCompletedPlan(browserHeadersPlanPath, 'wedding browser headers');
+assertCompletedPlan(referrerPolicyPlanPath, 'wedding referrer policy');
 
 console.log('wedding contracts passed');

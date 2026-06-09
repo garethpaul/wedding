@@ -2,6 +2,9 @@
 
 ## 2026-06-09
 
+- Added a site-wide `Referrer-Policy: no-referrer` header before static asset
+  handling.
+- Added static and runtime coverage for the referrer-policy header.
 - Added Helmet frameguard and no-sniff middleware before static asset serving.
 - Added route/header contract coverage for `X-Frame-Options` and
   `X-Content-Type-Options`.

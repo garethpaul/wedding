@@ -11,6 +11,7 @@ app.disable('x-powered-by');
 
 app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.noSniff());
+app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
 app.use(helmet.hsts({
       maxAge: 31536000000,
       includeSubdomains: true,
