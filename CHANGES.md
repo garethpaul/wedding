@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-09
+
+- Added Helmet frameguard and no-sniff middleware before static asset serving.
+- Added route/header contract coverage for `X-Frame-Options` and
+  `X-Content-Type-Options`.
+
 ## 2026-06-08
 
 - Disabled Express `X-Powered-By` responses and added route/header coverage.

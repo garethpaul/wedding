@@ -9,6 +9,8 @@ const helmet = require('helmet')
 
 app.disable('x-powered-by');
 
+app.use(helmet.frameguard({ action: 'deny' }));
+app.use(helmet.noSniff());
 app.use(helmet.hsts({
       maxAge: 31536000000,
       includeSubdomains: true,

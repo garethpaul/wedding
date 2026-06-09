@@ -18,6 +18,7 @@ Priority:
 - Preserve the static route structure and templates
 - Keep encrypted credentials encrypted
 - Avoid exposing unnecessary implementation headers
+- Keep baseline browser security headers enabled before static assets
 - Maintain deployment metadata and Travis context
 - Treat Swig and dependency versions as historical until documented
 

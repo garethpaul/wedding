@@ -10,6 +10,7 @@ const specPath = path.join(root, 'app', 'spec.js');
 const expressPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-express-hardening.md');
 const mapPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-tokenless-map.md');
 const poweredByPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-powered-by-header.md');
+const browserHeadersPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-browser-headers.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -26,6 +27,10 @@ function assert(condition, message) {
 
 assert(!appSource.includes('res.send(200,'), 'Express routes must use res.status(200).send(...)');
 assert(appSource.includes("app.disable('x-powered-by')"), 'Express must disable the X-Powered-By header');
+assert(appSource.includes("app.use(helmet.frameguard({ action: 'deny' }))"), 'Express must enable frameguard');
+assert(appSource.includes('app.use(helmet.noSniff())'), 'Express must enable no-sniff headers');
+assert(appSource.indexOf('app.use(helmet.frameguard') < appSource.indexOf("app.use('/static'"), 'frameguard must run before static assets');
+assert(appSource.indexOf('app.use(helmet.noSniff') < appSource.indexOf("app.use('/static'"), 'no-sniff must run before static assets');
 assert(appSource.indexOf('app.use(helmet.hsts') < appSource.indexOf("app.use('/static'"), 'helmet middleware must run before static assets');
 assert(
   appSource.includes("express.static(path.join(__dirname, 'public'))") ||
@@ -39,6 +44,8 @@ assert(!specSource.includes('server.close()'), 'tests should not depend on closi
 assert(specSource.includes("response.headers['x-powered-by']"), 'tests must assert X-Powered-By is absent');
 assert(specSource.includes('/static/css/main.less'), 'tests must cover a static asset response');
 assert(specSource.includes('Strict-Transport-Security'), 'tests must assert HSTS on static assets');
+assert(specSource.includes('X-Content-Type-Options'), 'tests must assert no-sniff on static assets');
+assert(specSource.includes('X-Frame-Options'), 'tests must assert frameguard on routed pages');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
@@ -54,5 +61,6 @@ function assertCompletedPlan(planPath, label) {
 assertCompletedPlan(expressPlanPath, 'wedding hardening');
 assertCompletedPlan(mapPlanPath, 'wedding tokenless map');
 assertCompletedPlan(poweredByPlanPath, 'wedding powered-by header');
+assertCompletedPlan(browserHeadersPlanPath, 'wedding browser headers');
 
 console.log('wedding contracts passed');

@@ -22,6 +22,14 @@ describe('loading express', function () {
     request(app)
       .get('/static/css/main.less')
       .expect('Strict-Transport-Security', /max-age=/)
+      .expect('X-Content-Type-Options', 'nosniff')
+      .expect(200, done);
+  });
+
+  it('sets clickjacking protection headers', function testFrameguard(done) {
+    request(app)
+      .get('/')
+      .expect('X-Frame-Options', 'DENY')
       .expect(200, done);
   });
 
