@@ -2,6 +2,9 @@
 
 ## 2026-06-09
 
+- Corrected the Helmet HSTS `maxAge` value to one year in seconds and asserted
+  the exact `Strict-Transport-Security` header in tests.
+- Added static checker coverage for the HSTS max-age and subdomain policy.
 - Added `form-action 'self'` to the site-wide Content Security Policy.
 - Added static and runtime coverage for the CSP form-action directive.
 - Added a site-wide Content Security Policy for the historical CDN, analytics,

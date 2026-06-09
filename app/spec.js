@@ -21,7 +21,7 @@ describe('loading express', function () {
   it('sets HSTS on static assets', function testStaticHsts(done) {
     request(app)
       .get('/static/css/main.less')
-      .expect('Strict-Transport-Security', /max-age=/)
+      .expect('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
       .expect('X-Content-Type-Options', 'nosniff')
       .expect(200, done);
   });

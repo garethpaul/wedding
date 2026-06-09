@@ -19,6 +19,7 @@ Priority:
 - Keep encrypted credentials encrypted
 - Avoid exposing unnecessary implementation headers
 - Keep baseline browser security headers enabled before static assets
+- Keep HSTS max-age explicit and bounded to one year
 - Keep legacy browser download protection enabled before static assets
 - Keep legacy XSS protection headers enabled before static assets
 - Keep DNS prefetching disabled before static assets

@@ -17,6 +17,7 @@ const xssProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-weddi
 const dnsPrefetchPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-dns-prefetch-control.md');
 const contentSecurityPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-content-security-policy.md');
 const formActionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-form-action-policy.md');
+const hstsMaxAgePlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-hsts-max-age.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -47,6 +48,9 @@ assert(appSource.includes("frameSrc: ['https://www.openstreetmap.org']"), 'CSP m
 assert(appSource.includes("objectSrc: [\"'none'\"]"), 'CSP must block plugin object content');
 assert(appSource.includes("baseUri: [\"'self'\"]"), 'CSP must restrict base URI changes');
 assert(appSource.includes("formAction: [\"'self'\"]"), 'CSP must restrict form submissions to the site origin');
+assert(appSource.includes('maxAge: 31536000'), 'HSTS maxAge must be one year in seconds');
+assert(!appSource.includes('maxAge: 31536000000'), 'HSTS maxAge must not use millisecond-style values');
+assert(appSource.includes('includeSubDomains: true'), 'HSTS must include subdomains with the documented option spelling');
 assert(appSource.indexOf('app.use(helmet.frameguard') < appSource.indexOf("app.use('/static'"), 'frameguard must run before static assets');
 assert(appSource.indexOf('app.use(helmet.noSniff') < appSource.indexOf("app.use('/static'"), 'no-sniff must run before static assets');
 assert(appSource.indexOf('app.use(helmet.ieNoOpen') < appSource.indexOf("app.use('/static'"), 'download protection must run before static assets');
@@ -67,6 +71,7 @@ assert(!specSource.includes('server.close()'), 'tests should not depend on closi
 assert(specSource.includes("response.headers['x-powered-by']"), 'tests must assert X-Powered-By is absent');
 assert(specSource.includes('/static/css/main.less'), 'tests must cover a static asset response');
 assert(specSource.includes('Strict-Transport-Security'), 'tests must assert HSTS on static assets');
+assert(specSource.includes('max-age=31536000; includeSubDomains'), 'tests must assert the exact HSTS max-age and subdomain policy');
 assert(specSource.includes('X-Content-Type-Options'), 'tests must assert no-sniff on static assets');
 assert(specSource.includes('X-Download-Options'), 'tests must assert download protection on static assets');
 assert(specSource.includes('X-XSS-Protection'), 'tests must assert legacy XSS protection on routed pages');
@@ -99,5 +104,6 @@ assertCompletedPlan(xssProtectionPlanPath, 'wedding XSS protection');
 assertCompletedPlan(dnsPrefetchPlanPath, 'wedding DNS prefetch control');
 assertCompletedPlan(contentSecurityPolicyPlanPath, 'wedding content security policy');
 assertCompletedPlan(formActionPlanPath, 'wedding form action policy');
+assertCompletedPlan(hstsMaxAgePlanPath, 'wedding HSTS max age');
 
 console.log('wedding contracts passed');

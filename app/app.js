@@ -44,8 +44,8 @@ app.use(helmet.contentSecurityPolicy({
       }
 }));
 app.use(helmet.hsts({
-      maxAge: 31536000000,
-      includeSubdomains: true,
+      maxAge: 31536000,
+      includeSubDomains: true,
       force: true
 }));
 
