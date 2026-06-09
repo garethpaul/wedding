@@ -75,6 +75,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - See `VISION.md` for project direction and contribution guardrails.
 - See `docs/plans/2026-06-08-wedding-express-hardening.md` for the current
   Express hardening baseline.
+- See `docs/plans/2026-06-08-wedding-tokenless-map.md` for the tokenless map
+  embed contract.
 
 ## Contributing
 
