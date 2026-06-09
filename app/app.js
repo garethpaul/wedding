@@ -39,7 +39,8 @@ app.use(helmet.contentSecurityPolicy({
             frameSrc: ['https://www.openstreetmap.org'],
             connectSrc: ["'self'", 'https://www.google-analytics.com'],
             objectSrc: ["'none'"],
-            baseUri: ["'self'"]
+            baseUri: ["'self'"],
+            formAction: ["'self'"]
       }
 }));
 app.use(helmet.hsts({

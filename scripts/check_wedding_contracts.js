@@ -16,6 +16,7 @@ const downloadOptionsPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wed
 const xssProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-xss-protection.md');
 const dnsPrefetchPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-dns-prefetch-control.md');
 const contentSecurityPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-content-security-policy.md');
+const formActionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-form-action-policy.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -45,6 +46,7 @@ assert(appSource.includes("styleSrc: [") && appSource.includes("'https://netdna.
 assert(appSource.includes("frameSrc: ['https://www.openstreetmap.org']"), 'CSP must restrict frame sources to OpenStreetMap');
 assert(appSource.includes("objectSrc: [\"'none'\"]"), 'CSP must block plugin object content');
 assert(appSource.includes("baseUri: [\"'self'\"]"), 'CSP must restrict base URI changes');
+assert(appSource.includes("formAction: [\"'self'\"]"), 'CSP must restrict form submissions to the site origin');
 assert(appSource.indexOf('app.use(helmet.frameguard') < appSource.indexOf("app.use('/static'"), 'frameguard must run before static assets');
 assert(appSource.indexOf('app.use(helmet.noSniff') < appSource.indexOf("app.use('/static'"), 'no-sniff must run before static assets');
 assert(appSource.indexOf('app.use(helmet.ieNoOpen') < appSource.indexOf("app.use('/static'"), 'download protection must run before static assets');
@@ -74,6 +76,7 @@ assert(specSource.includes('Referrer-Policy'), 'tests must assert referrer polic
 assert(specSource.includes('Content-Security-Policy'), 'tests must assert content security policy on routed pages');
 assert(specSource.includes("script-src 'self' 'unsafe-inline'"), 'tests must assert the CSP script directive');
 assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
+assert(specSource.includes("form-action 'self'"), 'tests must assert the CSP form-action directive');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
@@ -95,5 +98,6 @@ assertCompletedPlan(downloadOptionsPlanPath, 'wedding download options');
 assertCompletedPlan(xssProtectionPlanPath, 'wedding XSS protection');
 assertCompletedPlan(dnsPrefetchPlanPath, 'wedding DNS prefetch control');
 assertCompletedPlan(contentSecurityPolicyPlanPath, 'wedding content security policy');
+assertCompletedPlan(formActionPlanPath, 'wedding form action policy');
 
 console.log('wedding contracts passed');

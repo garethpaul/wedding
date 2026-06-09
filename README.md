@@ -50,7 +50,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - `make verify` runs static Express route/header checks, including browser
   security, download protection, legacy XSS protection, and referrer policy
   headers, DNS prefetch control, Content Security Policy coverage, and the npm
-  test suite when `app/node_modules` is installed.
+  test suite when `app/node_modules` is installed. CSP coverage includes the
+  `form-action 'self'` directive.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
@@ -94,6 +95,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   control coverage.
 - See `docs/plans/2026-06-09-wedding-content-security-policy.md` for the
   site-wide Content Security Policy baseline.
+- See `docs/plans/2026-06-09-wedding-form-action-policy.md` for the CSP
+  form-action submission boundary.
 
 ## Contributing
 

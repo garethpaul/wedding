@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Added `form-action 'self'` to the site-wide Content Security Policy.
+- Added static and runtime coverage for the CSP form-action directive.
 - Added a site-wide Content Security Policy for the historical CDN, analytics,
   registry-widget, and map dependencies.
 - Added `X-DNS-Prefetch-Control: off` before static asset handling.

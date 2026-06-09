@@ -25,6 +25,7 @@ Priority:
 - Keep referrer disclosure bounded for page and asset requests
 - Keep Content Security Policy coverage aligned with the historical CDN,
   analytics, registry-widget, and map dependencies
+- Keep CSP form submissions restricted to the site origin
 - Maintain deployment metadata and Travis context
 - Treat Swig and dependency versions as historical until documented
 

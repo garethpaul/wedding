@@ -35,7 +35,8 @@ Helpful reports include:
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
 - The Express baseline sends browser security headers before static assets,
   including a Content Security Policy that bounds the site's historical CDN,
-  analytics, registry-widget, and OpenStreetMap dependencies.
+  analytics, registry-widget, and OpenStreetMap dependencies. CSP also keeps
+  form submissions restricted to the site origin.
 
 ## Service and API Notes
 

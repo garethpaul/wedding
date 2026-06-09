@@ -75,7 +75,8 @@ describe('loading express', function () {
           "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://netdna.bootstrapcdn.com",
           "frame-src https://www.openstreetmap.org",
           "object-src 'none'",
-          "base-uri 'self'"
+          "base-uri 'self'",
+          "form-action 'self'"
         ].forEach(function assertDirective(directive) {
           if (policy.indexOf(directive) === -1) {
             throw new Error('Content-Security-Policy missing ' + directive);
