@@ -2,6 +2,8 @@
 
 ## 2026-06-09
 
+- Added `X-DNS-Prefetch-Control: off` before static asset handling.
+- Added static and runtime coverage for the DNS prefetch control header.
 - Added `X-Download-Options: noopen` before static asset handling.
 - Added static and runtime coverage for the download protection header.
 - Added `X-XSS-Protection: 1; mode=block` before static asset handling.

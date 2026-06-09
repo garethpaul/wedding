@@ -47,6 +47,13 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
+  it('disables DNS prefetching', function testDnsPrefetchControl(done) {
+    request(app)
+      .get('/')
+      .expect('X-DNS-Prefetch-Control', 'off')
+      .expect(200, done);
+  });
+
   it('sets a restrictive referrer policy', function testReferrerPolicy(done) {
     request(app)
       .get('/')
