@@ -20,6 +20,7 @@ Priority:
 - Avoid exposing unnecessary implementation headers
 - Keep baseline browser security headers enabled before static assets
 - Keep legacy browser download protection enabled before static assets
+- Keep legacy XSS protection headers enabled before static assets
 - Keep referrer disclosure bounded for page and asset requests
 - Maintain deployment metadata and Travis context
 - Treat Swig and dependency versions as historical until documented

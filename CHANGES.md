@@ -4,6 +4,8 @@
 
 - Added `X-Download-Options: noopen` before static asset handling.
 - Added static and runtime coverage for the download protection header.
+- Added `X-XSS-Protection: 1; mode=block` before static asset handling.
+- Added static and runtime coverage for the legacy XSS protection header.
 - Added a site-wide `Referrer-Policy: no-referrer` header before static asset
   handling.
 - Added static and runtime coverage for the referrer-policy header.

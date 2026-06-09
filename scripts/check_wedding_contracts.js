@@ -13,6 +13,7 @@ const poweredByPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-p
 const browserHeadersPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-browser-headers.md');
 const referrerPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-referrer-policy.md');
 const downloadOptionsPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-download-options.md');
+const xssProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-xss-protection.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -32,10 +33,12 @@ assert(appSource.includes("app.disable('x-powered-by')"), 'Express must disable 
 assert(appSource.includes("app.use(helmet.frameguard({ action: 'deny' }))"), 'Express must enable frameguard');
 assert(appSource.includes('app.use(helmet.noSniff())'), 'Express must enable no-sniff headers');
 assert(appSource.includes('app.use(helmet.ieNoOpen())'), 'Express must enable download protection headers');
+assert(appSource.includes('app.use(helmet.xssFilter())'), 'Express must enable legacy XSS protection headers');
 assert(appSource.includes("app.use(helmet.referrerPolicy({ policy: 'no-referrer' }))"), 'Express must enable a no-referrer policy');
 assert(appSource.indexOf('app.use(helmet.frameguard') < appSource.indexOf("app.use('/static'"), 'frameguard must run before static assets');
 assert(appSource.indexOf('app.use(helmet.noSniff') < appSource.indexOf("app.use('/static'"), 'no-sniff must run before static assets');
 assert(appSource.indexOf('app.use(helmet.ieNoOpen') < appSource.indexOf("app.use('/static'"), 'download protection must run before static assets');
+assert(appSource.indexOf('app.use(helmet.xssFilter') < appSource.indexOf("app.use('/static'"), 'XSS protection must run before static assets');
 assert(appSource.indexOf('app.use(helmet.referrerPolicy') < appSource.indexOf("app.use('/static'"), 'referrer policy must run before static assets');
 assert(appSource.indexOf('app.use(helmet.hsts') < appSource.indexOf("app.use('/static'"), 'helmet middleware must run before static assets');
 assert(
@@ -52,6 +55,7 @@ assert(specSource.includes('/static/css/main.less'), 'tests must cover a static 
 assert(specSource.includes('Strict-Transport-Security'), 'tests must assert HSTS on static assets');
 assert(specSource.includes('X-Content-Type-Options'), 'tests must assert no-sniff on static assets');
 assert(specSource.includes('X-Download-Options'), 'tests must assert download protection on static assets');
+assert(specSource.includes('X-XSS-Protection'), 'tests must assert legacy XSS protection on routed pages');
 assert(specSource.includes('X-Frame-Options'), 'tests must assert frameguard on routed pages');
 assert(specSource.includes('Referrer-Policy'), 'tests must assert referrer policy on routed pages');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
@@ -72,5 +76,6 @@ assertCompletedPlan(poweredByPlanPath, 'wedding powered-by header');
 assertCompletedPlan(browserHeadersPlanPath, 'wedding browser headers');
 assertCompletedPlan(referrerPolicyPlanPath, 'wedding referrer policy');
 assertCompletedPlan(downloadOptionsPlanPath, 'wedding download options');
+assertCompletedPlan(xssProtectionPlanPath, 'wedding XSS protection');
 
 console.log('wedding contracts passed');

@@ -40,6 +40,13 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
+  it('sets legacy XSS protection headers', function testXssProtection(done) {
+    request(app)
+      .get('/')
+      .expect('X-XSS-Protection', '1; mode=block')
+      .expect(200, done);
+  });
+
   it('sets a restrictive referrer policy', function testReferrerPolicy(done) {
     request(app)
       .get('/')
