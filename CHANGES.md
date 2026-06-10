@@ -1,5 +1,15 @@
 # Changes
 
+## 2026-06-10
+
+- Migrated the application from abandoned Swig templates to maintained
+  Nunjucks without changing the existing page templates or routes.
+- Upgraded Express, Helmet, Mocha, and Supertest; added a reproducible lockfile
+  and vulnerability-free dependency overrides.
+- Adopted Helmet's current browser security defaults, including modern
+  cross-origin headers and `X-XSS-Protection: 0`.
+- Added immutable, read-only GitHub Actions verification on Node.js 20 and 22.
+
 ## 2026-06-09
 
 - Corrected the Helmet HSTS `maxAge` value to one year in seconds and asserted

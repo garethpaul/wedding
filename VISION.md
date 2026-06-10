@@ -5,7 +5,7 @@ story, day-of information, accommodation, exploration, song requests, and
 registry.
 
 The repository is useful as a personal event site with App Engine deployment
-metadata, Swig templates, static assets, security middleware, and encrypted
+metadata, Nunjucks templates, static assets, security middleware, and encrypted
 credentials.
 
 The goal is to preserve the event site while keeping personal information,
@@ -21,14 +21,14 @@ Priority:
 - Keep baseline browser security headers enabled before static assets
 - Keep HSTS max-age explicit and bounded to one year
 - Keep legacy browser download protection enabled before static assets
-- Keep legacy XSS protection headers enabled before static assets
+- Disable obsolete browser XSS auditors while retaining CSP and modern headers
 - Keep DNS prefetching disabled before static assets
 - Keep referrer disclosure bounded for page and asset requests
 - Keep Content Security Policy coverage aligned with the historical CDN,
   analytics, registry-widget, and map dependencies
 - Keep CSP form submissions restricted to the site origin
 - Maintain deployment metadata and Travis context
-- Treat Swig and dependency versions as historical until documented
+- Keep the Node.js dependency graph maintained, locked, and audited
 
 Next priorities:
 
