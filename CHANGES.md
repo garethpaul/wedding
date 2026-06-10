@@ -4,11 +4,13 @@
 
 - Migrated the application from abandoned Swig templates to maintained
   Nunjucks without changing the existing page templates or routes.
-- Upgraded Express, Helmet, Mocha, and Supertest; added a reproducible lockfile
-  and vulnerability-free dependency overrides.
+- Upgraded to Express 5 and current Helmet and Supertest releases, added a
+  reproducible lockfile, and moved tests to Node.js's built-in runner so the
+  dependency tree no longer needs Mocha-specific security overrides.
 - Adopted Helmet's current browser security defaults, including modern
   cross-origin headers and `X-XSS-Protection: 0`.
-- Added immutable, read-only GitHub Actions verification on Node.js 20 and 22.
+- Added immutable, read-only GitHub Actions verification on Node.js 20, 22, and
+  24, including manual workflow dispatch.
 
 ## 2026-06-09
 

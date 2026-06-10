@@ -13,12 +13,14 @@ security policy.
 - Require Node.js 20 or newer and lock the dependency graph.
 - Replace Swig with Nunjucks, whose supported template syntax covers the site's
   existing inheritance, blocks, includes, and escaped variables.
-- Upgrade Express, Helmet, Mocha, and Supertest to maintained releases.
+- Upgrade Express 5, Helmet, and Supertest to maintained releases.
+- Replace Mocha with Node.js's built-in test runner, removing its deprecated
+  transitive dependency path and the overrides previously needed to patch it.
 - Use Helmet's current aggregate middleware, including modern cross-origin
   headers and the safe `X-XSS-Protection: 0` policy for obsolete browser
   auditors.
-- Add read-only GitHub Actions verification on Node.js 20 and 22 with immutable
-  action revisions.
+- Add read-only GitHub Actions verification on Node.js 20, 22, and 24 with
+  immutable action revisions and a manual dispatch path.
 - Enforce the dependency, workflow, and security-header contracts statically.
 
 ## Verification

@@ -10,19 +10,14 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "mocha -R spec spec.js"
+    "test": "node --test spec.js"
   },
   "dependencies": {
-    "express": "4.22.2",
+    "express": "5.2.1",
     "helmet": "8.2.0",
     "nunjucks": "3.2.4"
   },
   "devDependencies": {
-    "mocha": "11.7.6",
     "supertest": "7.2.2"
-  },
-  "overrides": {
-    "diff": "8.0.3",
-    "serialize-javascript": "7.0.5"
   }
 }
