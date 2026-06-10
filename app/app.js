@@ -3,19 +3,19 @@
 
 const express = require('express');
 const app = express();
-const path = require("path");
-const swig  = require('swig');
-const helmet = require('helmet')
+const path = require('path');
+const nunjucks = require('nunjucks');
+const helmet = require('helmet');
+
+const templatesPath = path.join(__dirname, 'public', 'templates');
+nunjucks.configure(templatesPath, { autoescape: true });
 
 app.disable('x-powered-by');
 
-app.use(helmet.frameguard({ action: 'deny' }));
-app.use(helmet.noSniff());
-app.use(helmet.ieNoOpen());
-app.use(helmet.xssFilter());
-app.use(helmet.dnsPrefetchControl());
-app.use(helmet.referrerPolicy({ policy: 'no-referrer' }));
-app.use(helmet.contentSecurityPolicy({
+app.use(helmet({
+      frameguard: { action: 'deny' },
+      referrerPolicy: { policy: 'no-referrer' },
+      contentSecurityPolicy: {
       directives: {
             defaultSrc: ["'self'"],
             scriptSrc: [
@@ -42,11 +42,11 @@ app.use(helmet.contentSecurityPolicy({
             baseUri: ["'self'"],
             formAction: ["'self'"]
       }
-}));
-app.use(helmet.hsts({
-      maxAge: 31536000,
-      includeSubDomains: true,
-      force: true
+      },
+      strictTransportSecurity: {
+            maxAge: 31536000,
+            includeSubDomains: true
+      }
 }));
 
 // Utilize middleware for serving files from public dir via /static
@@ -54,8 +54,7 @@ app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // Serve Index
 app.get('/', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/index.html'));
-  var output = template({
+  var output = nunjucks.render('index.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output)
@@ -63,8 +62,7 @@ app.get('/', (req,res) => {
 
 // Serve Our Story
 app.get('/our-story', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/our_story.html'));
-  var output = template({
+  var output = nunjucks.render('our_story.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output);
@@ -72,8 +70,7 @@ app.get('/our-story', (req,res) => {
 
 // The Big Day
 app.get('/the-big-day', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/the_big_day.html'));
-  var output = template({
+  var output = nunjucks.render('the_big_day.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output);
@@ -81,8 +78,7 @@ app.get('/the-big-day', (req,res) => {
 
 // Accomodation
 app.get('/accomodation', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/accomodation.html'));
-  var output = template({
+  var output = nunjucks.render('accomodation.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output);
@@ -90,8 +86,7 @@ app.get('/accomodation', (req,res) => {
 
 // Explore
 app.get('/explore', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/explore.html'));
-  var output = template({
+  var output = nunjucks.render('explore.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output);
@@ -99,8 +94,7 @@ app.get('/explore', (req,res) => {
 
 // Explore
 app.get('/song-requests', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/songs.html'));
-  var output = template({
+  var output = nunjucks.render('songs.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output);
@@ -108,8 +102,7 @@ app.get('/song-requests', (req,res) => {
 
 // Registry
 app.get('/registry', (req,res) => {
-  var template = swig.compileFile(path.join(__dirname+'/public/templates/registry.html'));
-  var output = template({
+  var output = nunjucks.render('registry.html', {
       title: 'Kristine + Gareth'
   });
   res.status(200).send(output);

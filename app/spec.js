@@ -40,10 +40,12 @@ describe('loading express', function () {
       .expect(200, done);
   });
 
-  it('sets legacy XSS protection headers', function testXssProtection(done) {
+  it('disables the obsolete browser XSS auditor', function testXssProtection(done) {
     request(app)
       .get('/')
-      .expect('X-XSS-Protection', '1; mode=block')
+      .expect('X-XSS-Protection', '0')
+      .expect('Cross-Origin-Opener-Policy', 'same-origin')
+      .expect('Cross-Origin-Resource-Policy', 'same-origin')
       .expect(200, done);
   });
 
