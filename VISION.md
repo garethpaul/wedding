@@ -24,8 +24,10 @@ Priority:
 - Disable obsolete browser XSS auditors while retaining CSP and modern headers
 - Keep DNS prefetching disabled before static assets
 - Keep referrer disclosure bounded for page and asset requests
-- Keep Content Security Policy coverage aligned with the historical CDN,
-  analytics, registry-widget, and map dependencies
+- Keep site-owned JavaScript local and same-origin, with no inline scripts or
+  third-party tracking loaders
+- Keep Content Security Policy coverage aligned with required static CDN and
+  map dependencies
 - Keep CSP form submissions restricted to the site origin
 - Maintain deployment metadata and Travis context
 - Keep the Node.js dependency graph maintained, locked, and audited

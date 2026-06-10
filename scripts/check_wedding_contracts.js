@@ -10,6 +10,7 @@ const specPath = path.join(root, 'app', 'spec.js');
 const packagePath = path.join(root, 'app', 'package.json');
 const lockPath = path.join(root, 'app', 'package-lock.json');
 const workflowPath = path.join(root, '.github', 'workflows', 'check.yml');
+const siteScriptPath = path.join(root, 'app', 'public', 'js', 'site.js');
 const expressPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-express-hardening.md');
 const mapPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-tokenless-map.md');
 const poweredByPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-powered-by-header.md');
@@ -22,11 +23,13 @@ const contentSecurityPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-
 const formActionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-form-action-policy.md');
 const hstsMaxAgePlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-hsts-max-age.md');
 const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-node-modernization.md');
+const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-inline-script-removal.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const workflowSource = fs.readFileSync(workflowPath, 'utf8');
+const siteScriptSource = fs.readFileSync(siteScriptPath, 'utf8');
 const templateSource = fs.readdirSync(templatesPath)
   .filter((fileName) => fileName.endsWith('.html'))
   .map((fileName) => fs.readFileSync(path.join(templatesPath, fileName), 'utf8'))
@@ -45,7 +48,10 @@ assert(appSource.includes("frameguard: { action: 'deny' }"), 'Express must enabl
 assert(appSource.includes("referrerPolicy: { policy: 'no-referrer' }"), 'Express must enable a no-referrer policy');
 assert(appSource.includes('contentSecurityPolicy: {'), 'Express must enable a content security policy');
 assert(appSource.includes("defaultSrc: [\"'self'\"]"), 'CSP must default to same-origin resources');
-assert(appSource.includes("scriptSrc: [") && appSource.includes("'https://www.google-analytics.com'") && appSource.includes("'https://widget.zola.com'"), 'CSP must bound script sources to the historical page dependencies');
+const scriptSources = appSource.split('scriptSrc: [', 2)[1].split(']', 1)[0];
+assert(!scriptSources.includes("'unsafe-inline'"), 'CSP script sources must reject inline JavaScript');
+assert(!appSource.includes('www.google-analytics.com'), 'CSP must not allow removed Google Analytics endpoints');
+assert(!appSource.includes('widget.zola.com'), 'CSP must not allow removed Zola widget scripts');
 assert(appSource.includes("styleSrc: [") && appSource.includes("'https://netdna.bootstrapcdn.com'") && appSource.includes("\"'unsafe-inline'\""), 'CSP must bound style sources while allowing legacy inline styles');
 assert(appSource.includes("frameSrc: ['https://www.openstreetmap.org']"), 'CSP must restrict frame sources to OpenStreetMap');
 assert(appSource.includes("objectSrc: [\"'none'\"]"), 'CSP must block plugin object content');
@@ -78,13 +84,19 @@ assert(specSource.includes('X-DNS-Prefetch-Control'), 'tests must assert DNS pre
 assert(specSource.includes('X-Frame-Options'), 'tests must assert frameguard on routed pages');
 assert(specSource.includes('Referrer-Policy'), 'tests must assert referrer policy on routed pages');
 assert(specSource.includes('Content-Security-Policy'), 'tests must assert content security policy on routed pages');
-assert(specSource.includes("script-src 'self' 'unsafe-inline'"), 'tests must assert the CSP script directive');
+assert(specSource.includes("script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com"), 'tests must assert the CSP script directive without unsafe-inline');
 assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
 assert(specSource.includes("form-action 'self'"), 'tests must assert the CSP form-action directive');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
 assert(templateSource.includes('referrerpolicy="no-referrer-when-downgrade"'), 'map iframe must bound referrer disclosure');
+assert(!/<script(?![^>]*\bsrc=)[^>]*>/i.test(templateSource), 'templates must not contain inline script blocks');
+assert(!templateSource.includes('google-analytics.com'), 'templates must not load Google Analytics');
+assert(!templateSource.includes('widget.zola.com'), 'templates must not load the Zola widget script');
+assert(templateSource.includes('src="/static/js/less.js"'), 'templates must use the checked-in Less compiler');
+assert(templateSource.includes('src="/static/js/site.js"'), 'templates must load local site initialization');
+assert(siteScriptSource.includes("$('#fullpage').fullpage({"), 'local site script must initialize fullPage navigation');
 assert(packageJson.engines.node === '>=20', 'package must require Node.js 20 or newer');
 assert(packageJson.dependencies.express === '5.2.1', 'Express must use the current maintained release');
 assert(packageJson.dependencies.helmet === '8.2.0', 'Helmet must use the current maintained release');
@@ -96,6 +108,9 @@ assert(packageJson.scripts.test === 'node --test spec.js', 'npm test must use th
 assert(!packageJson.overrides, 'dependency overrides must not outlive the removed Mocha tree');
 assert(fs.existsSync(lockPath), 'npm installs must be reproducible through package-lock.json');
 assert(workflowSource.includes('permissions:\n  contents: read'), 'CI permissions must be read-only');
+assert(workflowSource.includes('concurrency:'), 'CI must define concurrency');
+assert(workflowSource.includes('cancel-in-progress: true'), 'CI must cancel superseded runs');
+assert(workflowSource.includes('runs-on: ubuntu-24.04'), 'CI must use a fixed Ubuntu runner');
 assert(workflowSource.includes('node-version: [20, 22, 24]'), 'CI must cover Node.js 20, 22, and 24');
 assert(workflowSource.includes('workflow_dispatch:'), 'CI must support manual verification');
 assert(workflowSource.includes('npm ci --prefix app'), 'CI must install from the lockfile');
@@ -103,6 +118,11 @@ assert(workflowSource.includes('npm audit --prefix app'), 'CI must audit the dep
 assert(workflowSource.includes('run: make check'), 'CI must run the repository verification gate');
 assert(workflowSource.includes('actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10'), 'checkout must use an immutable revision');
 assert(workflowSource.includes('actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'), 'setup-node must use an immutable revision');
+assert(!workflowSource.includes('ubuntu-latest'), 'CI must not use a floating Ubuntu runner');
+const makefileSource = fs.readFileSync(path.join(root, 'Makefile'), 'utf8');
+assert(makefileSource.includes('ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must resolve the repository root');
+assert(makefileSource.includes('"$(ROOT)/scripts/check_wedding_contracts.js"'), 'Makefile must use the rooted contract path');
+assert(makefileSource.includes('--prefix "$(ROOT)/app"'), 'Makefile must use the rooted npm project path');
 
 function assertCompletedPlan(planPath, label) {
   assert(fs.existsSync(planPath), `${label} plan must live under docs/plans`);
@@ -123,5 +143,6 @@ assertCompletedPlan(contentSecurityPolicyPlanPath, 'wedding content security pol
 assertCompletedPlan(formActionPlanPath, 'wedding form action policy');
 assertCompletedPlan(hstsMaxAgePlanPath, 'wedding HSTS max age');
 assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
+assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
 
 console.log('wedding contracts passed');

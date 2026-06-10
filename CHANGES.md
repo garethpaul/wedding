@@ -11,6 +11,12 @@
   cross-origin headers and `X-XSS-Protection: 0`.
 - Added immutable, read-only GitHub Actions verification on Node.js 20, 22, and
   24, including manual workflow dispatch.
+- Removed inline JavaScript, Google Analytics, and the executable Zola registry
+  widget; page initialization now runs from a local static script.
+- Tightened `script-src` by removing `unsafe-inline` and obsolete tracking
+  origins, with static and runtime regression coverage.
+- Made verification independent of the caller's working directory and pinned
+  hosted CI to Ubuntu 24.04 with per-branch concurrency cancellation.
 
 ## 2026-06-09
 

@@ -74,7 +74,7 @@ describe('loading express', function () {
         }
         [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com https://www.google-analytics.com https://widget.zola.com",
+          "script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com",
           "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://netdna.bootstrapcdn.com",
           "frame-src https://www.openstreetmap.org",
           "object-src 'none'",
@@ -86,6 +86,13 @@ describe('loading express', function () {
           }
         });
       })
+      .expect(200);
+  });
+
+  it('serves local site initialization with security headers', async function testSiteScript() {
+    await request(app)
+      .get('/static/js/site.js')
+      .expect('X-Content-Type-Options', 'nosniff')
       .expect(200);
   });
 

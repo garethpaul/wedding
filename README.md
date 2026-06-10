@@ -56,9 +56,13 @@ The lockfile provides reproducible installs for local verification and CI.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
   `make check`.
-- `npm --prefix app test` runs the Mocha/Supertest suite after dependencies are installed.
+- `npm --prefix app test` runs the Node.js/Supertest suite after dependencies
+  are installed.
 - `npm audit --prefix app` verifies the locked dependency graph has no known
   vulnerabilities.
+
+GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
+22, and 24. Concurrent runs for the same branch are cancelled when superseded.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -74,6 +78,9 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include .travis.yml, app/public/js/less.js.
 - Review changes touching shell execution, subprocess, or dynamic evaluation; examples from the scan include app/public/js/less.js.
 - Review changes touching infrastructure, proxy, cloud, or deployment configuration; examples from the scan include app/public/js/less.js.
+- Keep site-owned executable scripts local and same-origin. Templates must not
+  contain inline scripts, analytics loaders, or executable registry widgets;
+  legacy library scripts remain limited to explicit CSP CDN origins.
 
 ## Maintenance Notes
 
@@ -103,6 +110,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   max-age contract.
 - See `docs/plans/2026-06-10-wedding-node-modernization.md` for the maintained
   Node.js, template engine, dependency, and hosted CI baseline.
+- See `docs/plans/2026-06-10-wedding-inline-script-removal.md` for the strict
+  script policy, tracking removal, and local initialization contract.
 
 ## Contributing
 

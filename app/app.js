@@ -20,12 +20,9 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             scriptSrc: [
                   "'self'",
-                  "'unsafe-inline'",
                   'https://cdnjs.cloudflare.com',
                   'https://code.jquery.com',
-                  'https://maxcdn.bootstrapcdn.com',
-                  'https://www.google-analytics.com',
-                  'https://widget.zola.com'
+                  'https://maxcdn.bootstrapcdn.com'
             ],
             styleSrc: [
                   "'self'",
@@ -34,10 +31,10 @@ app.use(helmet({
                   'https://maxcdn.bootstrapcdn.com',
                   'https://netdna.bootstrapcdn.com'
             ],
-            imgSrc: ["'self'", 'data:', 'https://www.google-analytics.com'],
+            imgSrc: ["'self'", 'data:'],
             fontSrc: ["'self'", 'https://netdna.bootstrapcdn.com'],
             frameSrc: ['https://www.openstreetmap.org'],
-            connectSrc: ["'self'", 'https://www.google-analytics.com'],
+            connectSrc: ["'self'"],
             objectSrc: ["'none'"],
             baseUri: ["'self'"],
             formAction: ["'self'"]
