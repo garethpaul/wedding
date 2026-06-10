@@ -96,6 +96,35 @@ describe('loading express', function () {
       .expect(200);
   });
 
+  it('renders accessible image alternatives and document metadata', async function testAccessibilityMetadata() {
+    await request(app)
+      .get('/')
+      .expect(function assertAccessibilityMetadata(response) {
+        var activeMarkup = response.text.replace(/<!--[\s\S]*?-->/g, '');
+        var imageTags = activeMarkup.match(/<img\b[^>]*>/gi) || [];
+        var imagesWithoutAlt = imageTags.filter(function missingAlt(imageTag) {
+          return !/\balt=(['"])[\s\S]*?\1/i.test(imageTag);
+        });
+
+        if (!/<html\s+lang="en">/i.test(activeMarkup)) {
+          throw new Error('document language must be English');
+        }
+        if (!/<meta\s+name="viewport"\s+content="width=device-width, initial-scale=1">/i.test(activeMarkup)) {
+          throw new Error('document must include mobile viewport metadata');
+        }
+        if (imageTags.length !== 11) {
+          throw new Error('home page must render the expected 11 images');
+        }
+        if (imagesWithoutAlt.length !== 0) {
+          throw new Error('every rendered image must have an alt attribute');
+        }
+        if (!activeMarkup.includes('alt="Kristine kissing Gareth on the cheek"')) {
+          throw new Error('story photos must retain meaningful alternative text');
+        }
+      })
+      .expect(200);
+  });
+
   it('does not expose Express implementation headers', async function testPoweredBy() {
     await request(app)
       .get('/')

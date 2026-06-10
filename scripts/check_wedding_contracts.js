@@ -24,6 +24,7 @@ const formActionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-
 const hstsMaxAgePlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-hsts-max-age.md');
 const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-node-modernization.md');
 const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-inline-script-removal.md');
+const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-image-accessibility.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -34,6 +35,7 @@ const templateSource = fs.readdirSync(templatesPath)
   .filter((fileName) => fileName.endsWith('.html'))
   .map((fileName) => fs.readFileSync(path.join(templatesPath, fileName), 'utf8'))
   .join('\n');
+const activeTemplateSource = templateSource.replace(/<!--[\s\S]*?-->/g, '');
 
 function assert(condition, message) {
   if (!condition) {
@@ -87,6 +89,7 @@ assert(specSource.includes('Content-Security-Policy'), 'tests must assert conten
 assert(specSource.includes("script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com"), 'tests must assert the CSP script directive without unsafe-inline');
 assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
 assert(specSource.includes("form-action 'self'"), 'tests must assert the CSP form-action directive');
+assert(specSource.includes('renders accessible image alternatives and document metadata'), 'tests must cover rendered image alternatives and document metadata');
 assert(!templateSource.includes('access_token=pk.'), 'templates must not embed Mapbox access tokens');
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
@@ -96,6 +99,21 @@ assert(!templateSource.includes('google-analytics.com'), 'templates must not loa
 assert(!templateSource.includes('widget.zola.com'), 'templates must not load the Zola widget script');
 assert(templateSource.includes('src="/static/js/less.js"'), 'templates must use the checked-in Less compiler');
 assert(templateSource.includes('src="/static/js/site.js"'), 'templates must load local site initialization');
+assert(activeTemplateSource.includes('<html lang="en">'), 'templates must declare the document language');
+assert(activeTemplateSource.includes('<meta name="viewport" content="width=device-width, initial-scale=1">'), 'templates must include mobile viewport metadata');
+const imageTags = activeTemplateSource.match(/<img\b[^>]*>/gi) || [];
+assert(imageTags.length === 11, 'templates must contain the expected 11 active images');
+assert(imageTags.every((imageTag) => /\balt=(['"])[\s\S]*?\1/i.test(imageTag)), 'every active image must have an alt attribute');
+assert(imageTags.filter((imageTag) => /\balt=""/i.test(imageTag)).length === 6, 'redundant navigation graphics must use empty alternative text');
+[
+  'Kristine kissing Gareth on the cheek',
+  'Kristine and Gareth sharing a dessert',
+  'Kristine and Gareth raising drinks together',
+  'Kristine and Gareth beside an I love you mural',
+  'Kristine and Gareth on a city street'
+].forEach((alternativeText) => {
+  assert(activeTemplateSource.includes(`alt="${alternativeText}"`), `story photo must retain alternative text: ${alternativeText}`);
+});
 assert(siteScriptSource.includes("$('#fullpage').fullpage({"), 'local site script must initialize fullPage navigation');
 assert(packageJson.engines.node === '>=20', 'package must require Node.js 20 or newer');
 assert(packageJson.dependencies.express === '5.2.1', 'Express must use the current maintained release');
@@ -144,5 +162,6 @@ assertCompletedPlan(formActionPlanPath, 'wedding form action policy');
 assertCompletedPlan(hstsMaxAgePlanPath, 'wedding HSTS max age');
 assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
 assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
+assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
 
 console.log('wedding contracts passed');

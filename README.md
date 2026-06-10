@@ -51,7 +51,9 @@ The lockfile provides reproducible installs for local verification and CI.
   cross-origin isolation, and referrer policy
   headers, DNS prefetch control, one-year HSTS max-age, Content Security Policy
   coverage, and the npm test suite when `app/node_modules` is installed. CSP
-  coverage includes the `form-action 'self'` directive.
+  coverage includes the `form-action 'self'` directive. Template checks also
+  enforce document language, mobile viewport metadata, and alternative text for
+  every active image.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
@@ -112,6 +114,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   Node.js, template engine, dependency, and hosted CI baseline.
 - See `docs/plans/2026-06-10-wedding-inline-script-removal.md` for the strict
   script policy, tracking removal, and local initialization contract.
+- See `docs/plans/2026-06-10-wedding-image-accessibility.md` for document
+  metadata and image alternative-text coverage.
 
 ## Contributing
 

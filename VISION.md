@@ -31,6 +31,8 @@ Priority:
 - Keep CSP form submissions restricted to the site origin
 - Maintain deployment metadata and Travis context
 - Keep the Node.js dependency graph maintained, locked, and audited
+- Keep document metadata and image alternatives accessible without duplicating
+  nearby navigation labels
 
 Next priorities:
 

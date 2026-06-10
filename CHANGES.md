@@ -2,6 +2,9 @@
 
 ## 2026-06-10
 
+- Added English document-language and mobile viewport metadata, decorative
+  alternatives for redundant navigation graphics, and concise descriptions for
+  story photos, with static and rendered-page regression coverage.
 - Migrated the application from abandoned Swig templates to maintained
   Nunjucks without changing the existing page templates or routes.
 - Upgraded to Express 5 and current Helmet and Supertest releases, added a
