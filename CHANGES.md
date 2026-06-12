@@ -1,5 +1,26 @@
 # Changes
 
+## 2026-06-12
+
+- Added SHA-384 Subresource Integrity and anonymous CORS metadata to every
+  fixed-version CDN stylesheet and script in the shared layout.
+- Hardened the Node.js Check workflow and added immutable-pinned actions and
+  JavaScript/TypeScript CodeQL analysis.
+- Added fail-closed contracts for external resource hashes, workflow
+  permissions, triggers, runners, action inventories, and completed evidence.
+
+## 2026-06-10
+
+- Converted visitor-facing accommodation and activity links from HTTP to HTTPS
+  and added a static contract preventing plaintext external links.
+- Migrated the application from abandoned Swig templates to maintained
+  Nunjucks without changing the existing page templates or routes.
+- Upgraded Express, Helmet, Mocha, and Supertest; added a reproducible lockfile
+  and vulnerability-free dependency overrides.
+- Adopted Helmet's current browser security defaults, including modern
+  cross-origin headers and `X-XSS-Protection: 0`.
+- Added immutable, read-only GitHub Actions verification on Node.js 20 and 22.
+
 ## 2026-06-09
 
 - Corrected the Helmet HSTS `maxAge` value to one year in seconds and asserted

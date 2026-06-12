@@ -28,18 +28,17 @@ Additional scan context:
 ### Prerequisites
 
 - Git
-- Node.js and npm
+- Node.js 20 or newer and npm
 
 ### Setup
 
 ```bash
 git clone https://github.com/garethpaul/wedding.git
 cd wedding
-cd app
-npm install
+npm ci --prefix app
 ```
 
-The setup commands above are derived from repository files. Legacy mobile, Python, or JavaScript samples may require older SDKs or package versions than a modern workstation uses by default.
+The lockfile provides reproducible installs for local verification and CI.
 
 ## Running or Using the Project
 
@@ -47,8 +46,16 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Testing and Verification
 
+- `make check` runs repository contracts and, when dependencies are installed,
+  all Express route and security-header tests.
+- The shared layout pins SHA-384 Subresource Integrity hashes with anonymous
+  CORS for every fixed-version CDN stylesheet and script.
+- GitHub Actions verifies Node.js 20/22 and runs CodeQL for workflow and
+  JavaScript/TypeScript sources.
+
 - `make verify` runs static Express route/header checks, including browser
-  security, download protection, legacy XSS protection, and referrer policy
+  security, download protection, obsolete XSS-auditor disabling, modern
+  cross-origin isolation, and referrer policy
   headers, DNS prefetch control, one-year HSTS max-age, Content Security Policy
   coverage, and the npm test suite when `app/node_modules` is installed. CSP
   coverage includes the `form-action 'self'` directive.
@@ -57,6 +64,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Completed maintenance plans live under `docs/plans` and are checked by
   `make check`.
 - `npm --prefix app test` runs the Mocha/Supertest suite after dependencies are installed.
+- `npm audit --prefix app` verifies the locked dependency graph has no known
+  vulnerabilities.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -89,8 +98,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   referrer-policy coverage.
 - See `docs/plans/2026-06-09-wedding-download-options.md` for static asset
   download-protection coverage.
-- See `docs/plans/2026-06-09-wedding-xss-protection.md` for legacy
-  `X-XSS-Protection` header coverage.
+- See `docs/plans/2026-06-09-wedding-xss-protection.md` for the historical
+  `X-XSS-Protection` header decision.
 - See `docs/plans/2026-06-09-wedding-dns-prefetch-control.md` for DNS prefetch
   control coverage.
 - See `docs/plans/2026-06-09-wedding-content-security-policy.md` for the
@@ -99,6 +108,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   form-action submission boundary.
 - See `docs/plans/2026-06-09-wedding-hsts-max-age.md` for the one-year HSTS
   max-age contract.
+- See `docs/plans/2026-06-10-wedding-node-modernization.md` for the maintained
+  Node.js, template engine, dependency, and hosted CI baseline.
 
 ## Contributing
 
