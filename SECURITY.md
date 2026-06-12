@@ -24,6 +24,15 @@ Helpful reports include:
 
 ## Project Security Posture
 
+Visitor-facing links in public templates must use HTTPS. `make check` rejects
+active `href="http://` destinations so accommodation and activity navigation
+does not silently downgrade to plaintext transport.
+
+Fixed-version CDN styles and scripts use reviewed SHA-384 Subresource
+Integrity hashes with anonymous CORS. Immutable-pinned CodeQL analysis covers
+workflow and JavaScript/TypeScript sources on pushes, pull requests, a weekly
+schedule, and manual dispatch.
+
 - This repository appears to be a public sample, documentation, or utility project. The active security scope is the code and documentation on the default branch.
 - Review found authentication, token, or session-related code paths; changes in those areas should receive security-focused review before merge.
 - Review found external API integrations or credential-adjacent configuration; changes in those areas should receive security-focused review before merge.
