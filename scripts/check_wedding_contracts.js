@@ -25,6 +25,7 @@ const hstsMaxAgePlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-
 const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-node-modernization.md');
 const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-inline-script-removal.md');
 const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-image-accessibility.md');
+const externalLinkPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-external-link-https.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -115,6 +116,7 @@ assert(imageTags.filter((imageTag) => /\balt=""/i.test(imageTag)).length === 6, 
   assert(activeTemplateSource.includes(`alt="${alternativeText}"`), `story photo must retain alternative text: ${alternativeText}`);
 });
 assert(siteScriptSource.includes("$('#fullpage').fullpage({"), 'local site script must initialize fullPage navigation');
+assert(!/href\s*=\s*(['"])http:\/\//i.test(templateSource), 'public templates must not contain plaintext external links');
 assert(packageJson.engines.node === '>=20', 'package must require Node.js 20 or newer');
 assert(packageJson.dependencies.express === '5.2.1', 'Express must use the current maintained release');
 assert(packageJson.dependencies.helmet === '8.2.0', 'Helmet must use the current maintained release');
@@ -163,5 +165,6 @@ assertCompletedPlan(hstsMaxAgePlanPath, 'wedding HSTS max age');
 assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
 assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
 assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
+assertCompletedPlan(externalLinkPlanPath, 'wedding external link HTTPS');
 
 console.log('wedding contracts passed');

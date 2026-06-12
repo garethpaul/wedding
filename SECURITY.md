@@ -24,6 +24,10 @@ Helpful reports include:
 
 ## Project Security Posture
 
+Visitor-facing links in public templates must use HTTPS. `make check` rejects
+active `href="http://` destinations so accommodation and activity navigation
+does not silently downgrade to plaintext transport.
+
 - This repository appears to be a public sample, documentation, or utility project. The active security scope is the code and documentation on the default branch.
 - Review found authentication, token, or session-related code paths; changes in those areas should receive security-focused review before merge.
 - Review found external API integrations or credential-adjacent configuration; changes in those areas should receive security-focused review before merge.

@@ -5,6 +5,8 @@
 - Added English document-language and mobile viewport metadata, decorative
   alternatives for redundant navigation graphics, and concise descriptions for
   story photos, with static and rendered-page regression coverage.
+- Converted visitor-facing accommodation and activity links from HTTP to HTTPS
+  and added a static contract preventing plaintext external links.
 - Migrated the application from abandoned Swig templates to maintained
   Nunjucks without changing the existing page templates or routes.
 - Upgraded to Express 5 and current Helmet and Supertest releases, added a

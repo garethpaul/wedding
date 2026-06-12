@@ -1,6 +1,6 @@
 # Wedding external link HTTPS migration
 
-status: planned
+status: completed
 
 ## Goal
 
@@ -15,4 +15,10 @@ plaintext HTTP.
 
 ## Verification
 
-Run `make check` and `git diff --check`.
+- Focused template scan passed with no `href="http://` destinations.
+- `npm --prefix app test` passed all 16 tests.
+- `npm audit --prefix app` reported zero vulnerabilities.
+- `make check` passed the contract checker and all 16 application tests.
+- Hostile plaintext-link mutations using normal and mixed-case, single-quoted
+  attribute syntax were rejected by the contract checker.
+- `git diff --check` passed.
