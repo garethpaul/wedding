@@ -67,6 +67,13 @@ prevents accidental reactivation without claiming historical revocation.
   `gcloud app deploy`, and a renamed JSON service-account document.
 - The changed-file scan covered the complete intended diff and found zero
   credential-value or private-key matches without printing candidate values.
+- Implementation head `b870f5ca67df0e11ddb45d23a52a24d663ebd416`
+  passed the complete Node.js 20, 22, and 24 matrix in push run `27435628978`
+  and pull-request run `27435639096`.
+- Pull request #3 was open, clean, and mergeable at that implementation head
+  with all six hosted checks successful. Its `master` base does not yet carry a
+  CodeQL workflow, so an empty PR-scoped code-scanning alert query is recorded
+  only as an API observation, not as CodeQL analysis evidence.
 
 ## Risks And Boundaries
 
