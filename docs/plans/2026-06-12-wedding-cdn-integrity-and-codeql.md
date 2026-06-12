@@ -36,5 +36,9 @@ CodeQL analysis to prove the findings are absent after remediation.
 - Six isolated mutations were rejected for missing integrity, changed
   integrity, missing anonymous CORS, a mutable CodeQL action, persisted checkout
   credentials, and an injected third workflow.
-- Exact-head hosted Check and CodeQL verification remains required before the
-  pull request is considered ready.
+- At implementation head `b0a2a253a345490a63a6c786b9444b69f5805671`,
+  push Check run `27426368586` and pull-request Check run `27426369724` passed
+  Node.js 20 and 22, and CodeQL run `27426369740` passed actions and
+  JavaScript/TypeScript analysis. The pull-request head reported zero open
+  code-scanning and Dependabot alerts. One previously documented historical
+  Mapbox secret-scanning alert remains open pending owner-side token rotation.
