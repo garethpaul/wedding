@@ -2,6 +2,8 @@
 
 ## 2026-06-10
 
+- Converted visitor-facing accommodation and activity links from HTTP to HTTPS
+  and added a static contract preventing plaintext external links.
 - Migrated the application from abandoned Swig templates to maintained
   Nunjucks without changing the existing page templates or routes.
 - Upgraded Express, Helmet, Mocha, and Supertest; added a reproducible lockfile

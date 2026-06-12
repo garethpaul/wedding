@@ -22,6 +22,7 @@ const contentSecurityPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-
 const formActionPlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-form-action-policy.md');
 const hstsMaxAgePlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-hsts-max-age.md');
 const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-node-modernization.md');
+const externalLinkPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-external-link-https.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -84,6 +85,7 @@ assert(!templateSource.includes('access_token=pk.'), 'templates must not embed M
 assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-day map must use a tokenless map embed');
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
 assert(templateSource.includes('referrerpolicy="no-referrer-when-downgrade"'), 'map iframe must bound referrer disclosure');
+assert(!/href\s*=\s*(['"])http:\/\//i.test(templateSource), 'public templates must not contain plaintext external links');
 assert(packageJson.engines.node === '>=20', 'package must require Node.js 20 or newer');
 assert(packageJson.dependencies.express === '4.22.2', 'Express must use the maintained 4.x release');
 assert(packageJson.dependencies.helmet === '8.2.0', 'Helmet must use the current maintained release');
@@ -121,5 +123,6 @@ assertCompletedPlan(contentSecurityPolicyPlanPath, 'wedding content security pol
 assertCompletedPlan(formActionPlanPath, 'wedding form action policy');
 assertCompletedPlan(hstsMaxAgePlanPath, 'wedding HSTS max age');
 assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
+assertCompletedPlan(externalLinkPlanPath, 'wedding external link HTTPS');
 
 console.log('wedding contracts passed');
