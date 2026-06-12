@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-06-12
+
+- Added SHA-384 Subresource Integrity and anonymous CORS metadata to every
+  fixed-version CDN stylesheet and script in the shared layout.
+- Hardened the Node.js Check workflow and added immutable-pinned actions and
+  JavaScript/TypeScript CodeQL analysis.
+- Added fail-closed contracts for external resource hashes, workflow
+  permissions, triggers, runners, action inventories, and completed evidence.
+
 ## 2026-06-10
 
 - Added English document-language and mobile viewport metadata, decorative

@@ -11,6 +11,7 @@ const packagePath = path.join(root, 'app', 'package.json');
 const lockPath = path.join(root, 'app', 'package-lock.json');
 const workflowPath = path.join(root, '.github', 'workflows', 'check.yml');
 const siteScriptPath = path.join(root, 'app', 'public', 'js', 'site.js');
+const codeqlWorkflowPath = path.join(root, '.github', 'workflows', 'codeql.yml');
 const expressPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-express-hardening.md');
 const mapPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-tokenless-map.md');
 const poweredByPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-powered-by-header.md');
@@ -26,12 +27,16 @@ const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-weddi
 const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-inline-script-removal.md');
 const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-image-accessibility.md');
 const externalLinkPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-external-link-https.md');
+const cdnIntegrityPlanPath = path.join(root, 'docs', 'plans', '2026-06-12-wedding-cdn-integrity-and-codeql.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
+const layoutPath = path.join(templatesPath, 'layout.html');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const workflowSource = fs.readFileSync(workflowPath, 'utf8');
 const siteScriptSource = fs.readFileSync(siteScriptPath, 'utf8');
+const codeqlWorkflowSource = fs.readFileSync(codeqlWorkflowPath, 'utf8');
+const layoutSource = fs.readFileSync(layoutPath, 'utf8');
 const templateSource = fs.readdirSync(templatesPath)
   .filter((fileName) => fileName.endsWith('.html'))
   .map((fileName) => fs.readFileSync(path.join(templatesPath, fileName), 'utf8'))
@@ -117,6 +122,24 @@ assert(imageTags.filter((imageTag) => /\balt=""/i.test(imageTag)).length === 6, 
 });
 assert(siteScriptSource.includes("$('#fullpage').fullpage({"), 'local site script must initialize fullPage navigation');
 assert(!/href\s*=\s*(['"])http:\/\//i.test(templateSource), 'public templates must not contain plaintext external links');
+
+const expectedExternalResources = new Map([
+  ['https://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css', 'sha384-pdapHxIh7EYuwy6K7iE41uXVxGCXY0sAjBzaElYGJUrzwodck3Lx6IE2lA0rFREo'],
+  ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.css', 'sha384-7iwtIAfJcdmOE1v8ooJt9VseRUH/H1orBncarhY6Gc4DwFqdGMZmsKB3qL4W/uKW'],
+  ['https://code.jquery.com/jquery-2.1.4.min.js', 'sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC'],
+  ['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js', 'sha384-pPttEvTHTuUJ9L2kCoMnNqCRcaMPMVMsWVO+RLaaaYDmfSP5//dP6eKRusbPcqhZ'],
+  ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.js', 'sha384-hhNjiSNhqsiYAL+l31KyzcTGAYraOrVCwtxxKCi6Tq8Go3PMns99n1fJfcqFuGmq']
+]);
+const externalResourceTags = [...layoutSource.matchAll(/<(?:script|link)\b[^>]*(?:src|href)="(https:\/\/[^\"]+)"[^>]*>/g)];
+assert(externalResourceTags.length === expectedExternalResources.size, 'layout external resource inventory must remain explicit');
+for (const match of externalResourceTags) {
+  const [tag, resourceUrl] = match;
+  const expectedIntegrity = expectedExternalResources.get(resourceUrl);
+  assert(expectedIntegrity, `layout external resource must be reviewed: ${resourceUrl}`);
+  assert(tag.includes(`integrity="${expectedIntegrity}"`), `layout external resource must keep reviewed integrity: ${resourceUrl}`);
+  assert(tag.includes('crossorigin="anonymous"'), `layout external resource must use anonymous CORS: ${resourceUrl}`);
+}
+
 assert(packageJson.engines.node === '>=20', 'package must require Node.js 20 or newer');
 assert(packageJson.dependencies.express === '5.2.1', 'Express must use the current maintained release');
 assert(packageJson.dependencies.helmet === '8.2.0', 'Helmet must use the current maintained release');
@@ -143,6 +166,43 @@ const makefileSource = fs.readFileSync(path.join(root, 'Makefile'), 'utf8');
 assert(makefileSource.includes('ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must resolve the repository root');
 assert(makefileSource.includes('"$(ROOT)/scripts/check_wedding_contracts.js"'), 'Makefile must use the rooted contract path');
 assert(makefileSource.includes('--prefix "$(ROOT)/app"'), 'Makefile must use the rooted npm project path');
+assert(workflowSource.includes('persist-credentials: false'), 'CI checkout must not persist credentials');
+assert(!workflowSource.includes('pull_request_target'), 'CI must not execute pull-request code with target-branch privileges');
+
+assert(codeqlWorkflowSource.includes('permissions:\n  contents: read\n  security-events: write'), 'CodeQL must use least-privilege upload permissions');
+assert(codeqlWorkflowSource.includes('language: [actions, javascript-typescript]'), 'CodeQL must analyze actions and JavaScript');
+assert(codeqlWorkflowSource.includes('build-mode: none'), 'CodeQL must use no-build analysis');
+assert(codeqlWorkflowSource.includes('runs-on: ubuntu-24.04'), 'CodeQL must use a fixed Ubuntu runner');
+assert(codeqlWorkflowSource.includes('timeout-minutes: 10'), 'CodeQL must keep a finite timeout');
+assert(codeqlWorkflowSource.includes('workflow_dispatch:'), 'CodeQL must support manual dispatch');
+assert(codeqlWorkflowSource.includes('schedule:'), 'CodeQL must run on a schedule');
+assert(codeqlWorkflowSource.includes('persist-credentials: false'), 'CodeQL checkout must not persist credentials');
+assert(!codeqlWorkflowSource.includes('pull_request_target'), 'CodeQL must not execute pull-request code with target-branch privileges');
+
+function workflowActions(source) {
+  return [...source.matchAll(/^\s*uses:\s*([^\s#]+)/gm)].map((match) => match[1]);
+}
+
+assert(
+  JSON.stringify(workflowActions(workflowSource)) === JSON.stringify([
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'
+  ]),
+  'CI must use only the approved immutable actions'
+);
+assert(
+  JSON.stringify(workflowActions(codeqlWorkflowSource)) === JSON.stringify([
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e',
+    'github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e'
+  ]),
+  'CodeQL must use only the approved immutable actions'
+);
+assert(
+  JSON.stringify(fs.readdirSync(path.join(root, '.github', 'workflows')).filter((fileName) => /\.ya?ml$/.test(fileName)).sort()) ===
+    JSON.stringify(['check.yml', 'codeql.yml']),
+  'workflow inventory must contain only Check and CodeQL'
+);
 
 function assertCompletedPlan(planPath, label) {
   assert(fs.existsSync(planPath), `${label} plan must live under docs/plans`);
@@ -166,5 +226,6 @@ assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
 assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
 assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
 assertCompletedPlan(externalLinkPlanPath, 'wedding external link HTTPS');
+assertCompletedPlan(cdnIntegrityPlanPath, 'wedding CDN integrity and CodeQL');
 
 console.log('wedding contracts passed');
