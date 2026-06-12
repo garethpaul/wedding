@@ -3,6 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const appPath = path.join(root, 'app', 'app.js');
@@ -25,6 +26,7 @@ const hstsMaxAgePlanPath = path.join(root, 'docs', 'plans', '2026-06-09-wedding-
 const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-node-modernization.md');
 const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-inline-script-removal.md');
 const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-image-accessibility.md');
+const deploymentRetirementPlanPath = path.join(root, 'docs', 'plans', '2026-06-12-wedding-deployment-credential-retirement.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -36,12 +38,49 @@ const templateSource = fs.readdirSync(templatesPath)
   .map((fileName) => fs.readFileSync(path.join(templatesPath, fileName), 'utf8'))
   .join('\n');
 const activeTemplateSource = templateSource.replace(/<!--[\s\S]*?-->/g, '');
+const trackedFiles = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' })
+  .split('\0')
+  .filter(Boolean);
 
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
 }
+
+const forbiddenDeploymentArtifacts = [
+  /^\.travis\.ya?ml$/i,
+  /\.enc$/i,
+  /(^|\/)credentials\.tar\.gz$/i,
+  /(^|\/)client-secret\.json$/i
+];
+for (const trackedFile of trackedFiles) {
+  assert(
+    !forbiddenDeploymentArtifacts.some((pattern) => pattern.test(trackedFile)),
+    `tracked deployment credential artifact is forbidden: ${trackedFile}`
+  );
+}
+
+const deploymentAutomationSource = trackedFiles
+  .filter((trackedFile) =>
+    !trackedFile.startsWith('docs/') &&
+    trackedFile !== 'scripts/check_wedding_contracts.js' &&
+    trackedFile !== 'app/package-lock.json' &&
+    /(?:^|\/)(?:[^/]+\.(?:ya?ml|sh|js|json)|Makefile)$/i.test(trackedFile)
+  )
+  .map((trackedFile) => fs.readFileSync(path.join(root, trackedFile), 'utf8'))
+  .join('\n');
+[
+  /openssl\s+aes-256-cbc/i,
+  /gcloud\s+auth\s+activate-service-account/i,
+  /gcloud\s+app\s+deploy/i,
+  /encrypted_[a-z0-9]+_(?:key|iv)/i,
+  /client-secret\.json/i,
+  /["']type["']\s*:\s*["']service_account["']/i,
+  /["']private_key["']\s*:/i
+].forEach((pattern) => {
+  assert(!pattern.test(deploymentAutomationSource), `legacy credential deployment automation is forbidden: ${pattern}`);
+});
 
 assert(!appSource.includes('res.send(200,'), 'Express routes must use res.status(200).send(...)');
 assert(appSource.includes("app.disable('x-powered-by')"), 'Express must disable the X-Powered-By header');
@@ -163,5 +202,6 @@ assertCompletedPlan(hstsMaxAgePlanPath, 'wedding HSTS max age');
 assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
 assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
 assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
+assertCompletedPlan(deploymentRetirementPlanPath, 'wedding deployment credential retirement');
 
 console.log('wedding contracts passed');

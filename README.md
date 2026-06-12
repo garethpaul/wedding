@@ -66,18 +66,29 @@ The lockfile provides reproducible installs for local verification and CI.
 GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
 22, and 24. Concurrent runs for the same branch are cancelled when superseded.
 
+## Deployment Status
+
+The repository does not contain an active deployment workflow. The retired
+Travis pipeline and its encrypted Google Cloud credential archive were removed;
+GitHub Actions verifies the site but does not deploy it. App Engine metadata is
+retained only as historical application configuration. Any future deployment
+must use a newly provisioned identity stored outside Git, with least privilege
+and an explicit reviewed workflow.
+
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
 ## Configuration and Secrets
 
 - Detected references to Mapbox, Twitter. Keep API keys, OAuth credentials, tokens, and account-specific values in local configuration only.
+- The removed encrypted archive remains in Git history. Repository cleanup does
+  not prove the historical Google Cloud key or Travis variables were revoked;
+  the owner must retire or rotate them through the providers.
 
 ## Security and Privacy Notes
 
-- Review changes touching authentication or token handling; examples from the scan include .travis.yml.
-- Review changes touching external API calls or credential-adjacent configuration; examples from the scan include .travis.yml, app/public/templates/our_story.html, app/public/templates/the_big_day.html.
-- Review changes touching network requests, sockets, or service endpoints; examples from the scan include .travis.yml, app/app.js, app/package.json, app/public/js/less.js, and 6 more.
-- Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include .travis.yml, app/public/js/less.js.
+- Review changes touching authentication, credentials, network requests, or
+  deployment automation. The maintained tree must not restore Travis decrypt
+  commands, service-account JSON, or encrypted credential containers.
 - Review changes touching shell execution, subprocess, or dynamic evaluation; examples from the scan include app/public/js/less.js.
 - Review changes touching infrastructure, proxy, cloud, or deployment configuration; examples from the scan include app/public/js/less.js.
 - Keep site-owned executable scripts local and same-origin. Templates must not

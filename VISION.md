@@ -4,19 +4,18 @@ Wedding is a Node.js/Express website for a wedding, with static pages for the
 story, day-of information, accommodation, exploration, song requests, and
 registry.
 
-The repository is useful as a personal event site with App Engine deployment
-metadata, Nunjucks templates, static assets, security middleware, and encrypted
-credentials.
+The repository is useful as a personal event site with historical App Engine
+metadata, Nunjucks templates, static assets, and security middleware.
 
 The goal is to preserve the event site while keeping personal information,
-deployment credentials, and historical dependency choices explicit.
+retired deployment boundaries, and historical dependency choices explicit.
 
 The current focus is:
 
 Priority:
 
 - Preserve the static route structure and templates
-- Keep encrypted credentials encrypted
+- Keep deployment credentials out of Git, including encrypted archives
 - Avoid exposing unnecessary implementation headers
 - Keep baseline browser security headers enabled before static assets
 - Keep HSTS max-age explicit and bounded to one year
@@ -29,15 +28,15 @@ Priority:
 - Keep Content Security Policy coverage aligned with required static CDN and
   map dependencies
 - Keep CSP form submissions restricted to the site origin
-- Maintain deployment metadata and Travis context
+- Retain App Engine metadata as history without restoring Travis deployment
 - Keep the Node.js dependency graph maintained, locked, and audited
 - Keep document metadata and image alternatives accessible without duplicating
   nearby navigation labels
 
 Next priorities:
 
-- Add setup notes for local development and deployment
-- Document how encrypted credentials are managed
+- Add setup notes for local development
+- Require a newly provisioned external identity before any future deployment
 - Review historical HTTP outbound links in event templates
 - Decide whether the site is archived or still deployable
 
@@ -55,8 +54,8 @@ Canonical security policy and reporting:
 - [`SECURITY.md`](SECURITY.md)
 
 Event sites can expose personal schedules, locations, guest information, and
-deployment secrets. Credentials should remain encrypted, and private event data
-should be reviewed before publishing.
+deployment secrets. Credentials must remain outside Git even when encrypted,
+and private event data should be reviewed before publishing.
 
 ## What We Will Not Merge (For Now)
 
