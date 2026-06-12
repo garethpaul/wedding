@@ -46,6 +46,13 @@ The lockfile provides reproducible installs for local verification and CI.
 
 ## Testing and Verification
 
+- `make check` runs repository contracts and, when dependencies are installed,
+  all Express route and security-header tests.
+- The shared layout pins SHA-384 Subresource Integrity hashes with anonymous
+  CORS for every fixed-version CDN stylesheet and script.
+- GitHub Actions verifies Node.js 20/22 and runs CodeQL for workflow and
+  JavaScript/TypeScript sources.
+
 - `make verify` runs static Express route/header checks, including browser
   security, download protection, obsolete XSS-auditor disabling, modern
   cross-origin isolation, and referrer policy
