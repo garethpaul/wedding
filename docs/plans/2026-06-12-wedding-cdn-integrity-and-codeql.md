@@ -25,12 +25,14 @@ CodeQL analysis to prove the findings are absent after remediation.
 
 ## Verification
 
-- All 16 Express route and security-header tests passed.
+- All 18 current Express route, accessibility, asset, and security-header tests
+  passed after replaying the work onto the newer `master` line.
 - `npm audit --prefix app` reported zero known vulnerabilities.
-- `make check` passed the portable contracts and all 16 installed-dependency
+- `make check` passed the portable contracts and all 18 installed-dependency
   Express tests.
-- Fresh downloads of all six reviewed CDN assets reproduced the committed
-  SHA-384 hashes, and each CDN returned cross-origin access permission.
+- The original remediation verified all six then-external CDN assets. Current
+  `master` serves Less from the repository, so the delivery branch preserves
+  that stronger boundary and pins the five remaining external resources.
 - Ruby parsed both workflow files, Node syntax validation passed for the
   checker, and `git diff --check` passed.
 - Six isolated mutations were rejected for missing integrity, changed
@@ -42,3 +44,10 @@ CodeQL analysis to prove the findings are absent after remediation.
   JavaScript/TypeScript analysis. The pull-request head reported zero open
   code-scanning and Dependabot alerts. One previously documented historical
   Mapbox secret-scanning alert remains open pending owner-side token rotation.
+- The default-branch delivery branch was rebuilt from current `origin/master`
+  rather than merging the diverged intermediate base. It preserved Express 5,
+  the built-in Node test runner, local Less, inline-script removal, and image
+  accessibility while adding the HTTPS, five-resource SRI, and CodeQL changes.
+- On the combined delivery tree, `npm ci --prefix app`, `npm audit --prefix app`,
+  `make check`, all 18 tests, and `git diff --check` passed with zero known npm
+  vulnerabilities.
