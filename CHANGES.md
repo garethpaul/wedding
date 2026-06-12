@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-06-12
+
+- Removed the obsolete Travis decrypt/deploy pipeline and its tracked encrypted
+  Google Cloud credential archive without rewriting repository history.
+- Added static contracts and ignore rules that reject restored credential
+  containers, extracted service-account files, and legacy deployment commands.
+- Documented that GitHub Actions is verification-only and that provider-side
+  key and Travis-variable retirement remains an explicit owner action.
+
 ## 2026-06-10
 
 - Added English document-language and mobile viewport metadata, decorative
