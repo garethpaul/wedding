@@ -47,6 +47,9 @@ Helpful reports include:
 - Every allowed third-party script and stylesheet carries a reviewed SHA-384
   Subresource Integrity value with anonymous CORS mode. CDN URL or asset updates
   must refresh the digest and verification evidence together.
+- Site-owned Less is compiled to tracked CSS during the package build. The
+  browser receives neither a Less compiler nor inline styles, so `style-src`
+  does not permit `unsafe-inline`.
 
 ## Service and API Notes
 

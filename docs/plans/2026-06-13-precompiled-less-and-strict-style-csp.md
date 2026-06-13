@@ -6,7 +6,7 @@ date: 2026-06-13
 
 # Precompile Less And Tighten Style CSP
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -59,3 +59,28 @@ remove both the runtime compiler and the unsafe CSP exception.
 - Do not redesign the site, rewrite the Less source, change CDN versions,
   remove SRI, alter routes, or add production dependencies.
 - Do not merge or close any pull request without explicit owner authorization.
+
+## Verification Results
+
+- `timeout 120s npm --prefix app run build` regenerated the tracked stylesheet
+  successfully from `main.less` with source digest
+  `08e2eaf7b7ae14f8bf336e256d80658c9877178f2d4b1d389cfaa55ca96f3e9a`.
+- `timeout 120s npm --prefix app test` passed all 21 runtime tests, including
+  compiled stylesheet delivery, removed browser Less references, and the strict
+  style CSP.
+- `node scripts/check_wedding_contracts.js` reached only this plan-completion
+  gate before the status was updated, confirming the implementation contracts
+  were satisfied.
+- `timeout 180s npm --prefix app ci` installed and audited 127 locked packages
+  with zero vulnerabilities.
+- Two bounded `npm --prefix app run build` executions produced identical
+  `main.css` SHA-256
+  `1be7bea9434cb72a9721819a21105ee877fbab75a16bd253331e3364b936b280`.
+- Both `timeout 180s npm --prefix app audit` and the production-only audit
+  reported zero vulnerabilities.
+- Eight isolated hostile mutations were rejected for restored unsafe inline
+  styles, direct Less loading, a browser compiler reference or asset, stale
+  compiled CSS, an unpinned compiler, unsafe Less JavaScript evaluation, and
+  removed runtime coverage.
+- `timeout 240s make check` and the external-working-directory equivalent both
+  passed the dependency-free contracts, all 21 runtime tests, and the CSS build.
