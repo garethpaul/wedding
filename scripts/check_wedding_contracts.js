@@ -3,6 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
@@ -29,12 +30,23 @@ const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-weddi
 const deploymentRetirementPlanPath = path.join(root, 'docs', 'plans', '2026-06-12-wedding-deployment-credential-retirement.md');
 const permissionsPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-permissions-policy.md');
 const subresourceIntegrityPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-cdn-subresource-integrity.md');
+const precompiledLessPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-precompiled-less-and-strict-style-csp.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
+const layoutPath = path.join(templatesPath, 'layout.html');
+const lessSourcePath = path.join(root, 'app', 'public', 'css', 'main.less');
+const compiledCssPath = path.join(root, 'app', 'public', 'css', 'main.css');
+const browserLessPath = path.join(root, 'app', 'public', 'js', 'less.js');
+const cssBuildScriptPath = path.join(root, 'scripts', 'build_wedding_css.js');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+const packageLock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
 const workflowSource = fs.readFileSync(workflowPath, 'utf8');
 const siteScriptSource = fs.readFileSync(siteScriptPath, 'utf8');
+const layoutSource = fs.readFileSync(layoutPath, 'utf8');
+const lessSource = fs.readFileSync(lessSourcePath, 'utf8');
+const compiledCssSource = fs.readFileSync(compiledCssPath, 'utf8');
+const cssBuildScriptSource = fs.readFileSync(cssBuildScriptPath, 'utf8');
 const templateSource = fs.readdirSync(templatesPath)
   .filter((fileName) => fileName.endsWith('.html'))
   .map((fileName) => fs.readFileSync(path.join(templatesPath, fileName), 'utf8'))
@@ -65,6 +77,7 @@ for (const trackedFile of trackedFiles) {
 
 const deploymentAutomationSource = trackedFiles
   .filter((trackedFile) =>
+    fs.existsSync(path.join(root, trackedFile)) &&
     !trackedFile.startsWith('docs/') &&
     trackedFile !== 'scripts/check_wedding_contracts.js' &&
     trackedFile !== 'app/package-lock.json' &&
@@ -95,7 +108,11 @@ const scriptSources = appSource.split('scriptSrc: [', 2)[1].split(']', 1)[0];
 assert(!scriptSources.includes("'unsafe-inline'"), 'CSP script sources must reject inline JavaScript');
 assert(!appSource.includes('www.google-analytics.com'), 'CSP must not allow removed Google Analytics endpoints');
 assert(!appSource.includes('widget.zola.com'), 'CSP must not allow removed Zola widget scripts');
-assert(appSource.includes("styleSrc: [") && appSource.includes("'https://netdna.bootstrapcdn.com'") && appSource.includes("\"'unsafe-inline'\""), 'CSP must bound style sources while allowing legacy inline styles');
+const styleSources = appSource.split('styleSrc: [', 2)[1].split(']', 1)[0];
+assert(styleSources.includes("'https://cdnjs.cloudflare.com'"), 'CSP style sources must allow the reviewed fullPage stylesheet');
+assert(styleSources.includes("'https://maxcdn.bootstrapcdn.com'"), 'CSP style sources must preserve the reviewed Bootstrap origin');
+assert(styleSources.includes("'https://netdna.bootstrapcdn.com'"), 'CSP style sources must preserve the reviewed Bootstrap stylesheet origin');
+assert(!styleSources.includes("'unsafe-inline'"), 'CSP style sources must reject inline styles');
 assert(appSource.includes("frameSrc: ['https://www.openstreetmap.org']"), 'CSP must restrict frame sources to OpenStreetMap');
 assert(appSource.includes("objectSrc: [\"'none'\"]"), 'CSP must block plugin object content');
 assert(appSource.includes("baseUri: [\"'self'\"]"), 'CSP must restrict base URI changes');
@@ -117,7 +134,7 @@ assert(!appSource.includes('module.exports = server'), 'app.js must not export a
 assert(!specSource.includes('server.close()'), 'tests should not depend on closing a require-cached server');
 assert(specSource.includes("require('node:test')"), 'tests must use the built-in Node.js test runner');
 assert(specSource.includes("response.headers['x-powered-by']"), 'tests must assert X-Powered-By is absent');
-assert(specSource.includes('/static/css/main.less'), 'tests must cover a static asset response');
+assert(specSource.includes('/static/css/main.css'), 'tests must cover the compiled static stylesheet');
 assert(specSource.includes('Strict-Transport-Security'), 'tests must assert HSTS on static assets');
 assert(specSource.includes('max-age=31536000; includeSubDomains'), 'tests must assert the exact HSTS max-age and subdomain policy');
 assert(specSource.includes('X-Content-Type-Options'), 'tests must assert no-sniff on static assets');
@@ -133,10 +150,12 @@ const permissionsPolicyTest = specSource
   .split('async function testPermissionsPolicy()', 2)[1]
   .split('\n  });', 1)[0];
 assert(permissionsPolicyTest.includes(".get('/')"), 'Permissions-Policy tests must cover routed pages');
-assert(permissionsPolicyTest.includes(".get('/static/css/main.less')"), 'Permissions-Policy tests must cover static assets');
+assert(permissionsPolicyTest.includes(".get('/static/css/main.css')"), 'Permissions-Policy tests must cover compiled static assets');
 assert(specSource.includes('Content-Security-Policy'), 'tests must assert content security policy on routed pages');
+assert(specSource.includes('serves precompiled site styles without a browser Less compiler'), 'tests must cover precompiled styles without runtime Less');
 assert(specSource.includes('pins every third-party CDN resource with subresource integrity'), 'tests must cover rendered CDN integrity metadata');
 assert(specSource.includes("script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com"), 'tests must assert the CSP script directive without unsafe-inline');
+assert(specSource.includes("style-src 'self' https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://netdna.bootstrapcdn.com"), 'tests must assert the CSP style directive without unsafe-inline');
 assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
 assert(specSource.includes("form-action 'self'"), 'tests must assert the CSP form-action directive');
 assert(specSource.includes('renders accessible image alternatives and document metadata'), 'tests must cover rendered image alternatives and document metadata');
@@ -145,10 +164,23 @@ assert(templateSource.includes('openstreetmap.org/export/embed.html'), 'wedding-
 assert(templateSource.includes('title="Park City wedding map"'), 'map iframe must have a descriptive title');
 assert(templateSource.includes('referrerpolicy="no-referrer-when-downgrade"'), 'map iframe must bound referrer disclosure');
 assert(!/<script(?![^>]*\bsrc=)[^>]*>/i.test(templateSource), 'templates must not contain inline script blocks');
+assert(!/<style\b/i.test(activeTemplateSource), 'templates must not contain inline style blocks');
+assert(!/\sstyle\s*=/i.test(activeTemplateSource), 'templates must not contain inline style attributes');
 assert(!templateSource.includes('google-analytics.com'), 'templates must not load Google Analytics');
 assert(!templateSource.includes('widget.zola.com'), 'templates must not load the Zola widget script');
-assert(templateSource.includes('src="/static/js/less.js"'), 'templates must use the checked-in Less compiler');
+assert(layoutSource.includes('href="/static/css/main.css"'), 'layout must load the precompiled stylesheet');
+assert(!layoutSource.includes('/static/css/main.less'), 'layout must not load Less source directly');
+assert(!layoutSource.includes('/static/js/less.js'), 'layout must not load a browser Less compiler');
+assert(!fs.existsSync(browserLessPath), 'browser Less compiler must be removed');
 assert(templateSource.includes('src="/static/js/site.js"'), 'templates must load local site initialization');
+const lessDigest = crypto.createHash('sha256').update(lessSource).digest('hex');
+assert(compiledCssSource.startsWith(`/* source-sha256: ${lessDigest} */\n`), 'compiled CSS must match the current Less source digest');
+assert(compiledCssSource.includes('.starter-template'), 'compiled CSS must contain the site stylesheet rules');
+assert(!compiledCssSource.includes('sourceMappingURL='), 'compiled CSS must not include a source map reference');
+assert(cssBuildScriptSource.includes('javascriptEnabled: false'), 'CSS build must disable Less JavaScript evaluation');
+assert(cssBuildScriptSource.includes("createHash('sha256')"), 'CSS build must bind output to a source digest');
+assert(cssBuildScriptSource.includes("'main.less'"), 'CSS build must read the tracked Less source');
+assert(cssBuildScriptSource.includes("'main.css'"), 'CSS build must write the tracked CSS artifact');
 const expectedCdnIntegrity = new Map([
   ['https://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css', 'sha384-pdapHxIh7EYuwy6K7iE41uXVxGCXY0sAjBzaElYGJUrzwodck3Lx6IE2lA0rFREo'],
   ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.css', 'sha384-7iwtIAfJcdmOE1v8ooJt9VseRUH/H1orBncarhY6Gc4DwFqdGMZmsKB3qL4W/uKW'],
@@ -189,9 +221,12 @@ assert(packageJson.dependencies.nunjucks === '3.2.4', 'Nunjucks must replace aba
 assert(!packageJson.dependencies.swig, 'Swig must not remain in runtime dependencies');
 assert(!packageJson.devDependencies.mocha, 'tests must not retain the deprecated Mocha dependency tree');
 assert(packageJson.devDependencies.supertest === '7.2.2', 'Supertest must be a current development dependency');
+assert(packageJson.devDependencies.less === '4.6.4', 'Less must be pinned exactly as a development dependency');
 assert(packageJson.scripts.test === 'node --test spec.js', 'npm test must use the built-in Node.js test runner');
+assert(packageJson.scripts.build === 'node ../scripts/build_wedding_css.js', 'npm build must precompile the site stylesheet');
 assert(!packageJson.overrides, 'dependency overrides must not outlive the removed Mocha tree');
 assert(fs.existsSync(lockPath), 'npm installs must be reproducible through package-lock.json');
+assert(packageLock.packages['node_modules/less'].version === '4.6.4', 'lockfile must pin Less 4.6.4');
 assert(workflowSource.includes('permissions:\n  contents: read'), 'CI permissions must be read-only');
 assert(workflowSource.includes('concurrency:'), 'CI must define concurrency');
 assert(workflowSource.includes('cancel-in-progress: true'), 'CI must cancel superseded runs');
@@ -208,6 +243,7 @@ const makefileSource = fs.readFileSync(path.join(root, 'Makefile'), 'utf8');
 assert(makefileSource.includes('ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must resolve the repository root');
 assert(makefileSource.includes('"$(ROOT)/scripts/check_wedding_contracts.js"'), 'Makefile must use the rooted contract path');
 assert(makefileSource.includes('--prefix "$(ROOT)/app"'), 'Makefile must use the rooted npm project path');
+assert(makefileSource.includes('$(NPM) --prefix "$(ROOT)/app" run build'), 'Makefile build must precompile the stylesheet');
 
 function assertCompletedPlan(planPath, label) {
   assert(fs.existsSync(planPath), `${label} plan must live under docs/plans`);
@@ -233,5 +269,6 @@ assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
 assertCompletedPlan(deploymentRetirementPlanPath, 'wedding deployment credential retirement');
 assertCompletedPlan(permissionsPolicyPlanPath, 'wedding permissions policy');
 assertCompletedPlan(subresourceIntegrityPlanPath, 'wedding CDN subresource integrity');
+assertCompletedPlan(precompiledLessPlanPath, 'wedding precompiled Less');
 
 console.log('wedding contracts passed');

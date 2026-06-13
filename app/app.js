@@ -26,7 +26,6 @@ app.use(helmet({
             ],
             styleSrc: [
                   "'self'",
-                  "'unsafe-inline'",
                   'https://cdnjs.cloudflare.com',
                   'https://maxcdn.bootstrapcdn.com',
                   'https://netdna.bootstrapcdn.com'

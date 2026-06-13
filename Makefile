@@ -16,6 +16,11 @@ test:
 	fi
 
 build: lint
+	@if [ -d "$(ROOT)/app/node_modules" ]; then \
+		$(NPM) --prefix "$(ROOT)/app" run build; \
+	else \
+		echo "Skipping CSS build: app/node_modules is not installed."; \
+	fi
 
 verify: lint test build
 

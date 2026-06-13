@@ -21,7 +21,7 @@ describe('loading express', function () {
 
   it('sets HSTS on static assets', async function testStaticHsts() {
     await request(app)
-      .get('/static/css/main.less')
+      .get('/static/css/main.css')
       .expect('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
       .expect('X-Content-Type-Options', 'nosniff')
       .expect(200);
@@ -29,7 +29,7 @@ describe('loading express', function () {
 
   it('sets download protection headers on static assets', async function testDownloadOptions() {
     await request(app)
-      .get('/static/css/main.less')
+      .get('/static/css/main.css')
       .expect('X-Download-Options', 'noopen')
       .expect(200);
   });
@@ -73,7 +73,7 @@ describe('loading express', function () {
       .expect(200);
 
     await request(app)
-      .get('/static/css/main.less')
+      .get('/static/css/main.css')
       .expect('Permissions-Policy', policy)
       .expect(200);
   });
@@ -89,7 +89,7 @@ describe('loading express', function () {
         [
           "default-src 'self'",
           "script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com",
-          "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://netdna.bootstrapcdn.com",
+          "style-src 'self' https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com https://netdna.bootstrapcdn.com",
           "frame-src https://www.openstreetmap.org",
           "object-src 'none'",
           "base-uri 'self'",
@@ -100,6 +100,26 @@ describe('loading express', function () {
           }
         });
       })
+      .expect(200);
+  });
+
+  it('serves precompiled site styles without a browser Less compiler', async function testPrecompiledStyles() {
+    await request(app)
+      .get('/')
+      .expect(function assertCompiledStyleReferences(response) {
+        if (!response.text.includes('href="/static/css/main.css"')) {
+          throw new Error('layout must load the compiled stylesheet');
+        }
+        if (response.text.includes('main.less') || response.text.includes('/static/js/less.js')) {
+          throw new Error('layout must not load browser-side Less assets');
+        }
+      })
+      .expect(200);
+
+    await request(app)
+      .get('/static/css/main.css')
+      .expect('Content-Type', /text\/css/)
+      .expect(/source-sha256: [a-f0-9]{64}/)
       .expect(200);
   });
 

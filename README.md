@@ -50,7 +50,8 @@ The lockfile provides reproducible installs for local verification and CI.
   security, download protection, obsolete XSS-auditor disabling, modern
   cross-origin isolation, and referrer policy
   headers, DNS prefetch control, one-year HSTS max-age, Content Security Policy
-  coverage, and the npm test suite when `app/node_modules` is installed. CSP
+  coverage, the deterministic precompiled stylesheet, and the npm test suite
+  when `app/node_modules` is installed. CSP
   coverage includes the `form-action 'self'` directive. Template checks also
   enforce document language, mobile viewport metadata, and alternative text for
   every active image. Third-party CDN tags must match the reviewed URL-to-SHA-384
@@ -59,6 +60,8 @@ The lockfile provides reproducible installs for local verification and CI.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
   `make check`.
+- `npm --prefix app run build` compiles `app/public/css/main.less` to the
+  tracked `app/public/css/main.css`; browser requests never execute Less.
 - `npm --prefix app test` runs the Node.js/Supertest suite after dependencies
   are installed.
 - `npm audit --prefix app` verifies the locked dependency graph has no known
@@ -90,8 +93,11 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Review changes touching authentication, credentials, network requests, or
   deployment automation. The maintained tree must not restore Travis decrypt
   commands, service-account JSON, or encrypted credential containers.
-- Review changes touching shell execution, subprocess, or dynamic evaluation; examples from the scan include app/public/js/less.js.
-- Review changes touching infrastructure, proxy, cloud, or deployment configuration; examples from the scan include app/public/js/less.js.
+- Review changes touching build tooling or dynamic evaluation. The pinned Less
+  compiler runs only during the package build with JavaScript evaluation
+  disabled.
+- Review changes touching infrastructure, proxy, cloud, or deployment
+  configuration; historical App Engine metadata remains deployment-adjacent.
 - Keep site-owned executable scripts local and same-origin. Templates must not
   contain inline scripts, analytics loaders, or executable registry widgets;
   legacy library scripts remain limited to explicit CSP CDN origins.
@@ -102,6 +108,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   least-privilege browser capability policy on pages and static assets.
 - See `docs/plans/2026-06-13-wedding-cdn-subresource-integrity.md` for exact
   SHA-384 pins on every third-party CDN script and stylesheet.
+- See `docs/plans/2026-06-13-precompiled-less-and-strict-style-csp.md` for the
+  deterministic CSS build and strict `style-src` contract.
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.

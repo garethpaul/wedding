@@ -2,6 +2,10 @@
 
 ## 2026-06-13
 
+- Replaced the browser-side Less compiler with deterministic build-time CSS,
+  pinned `less@4.6.4`, and removed `unsafe-inline` from `style-src`.
+- Added source-digest, layout, dependency, runtime, and hostile-mutation
+  contracts for the tracked compiled stylesheet.
 - Added reviewed SHA-384 Subresource Integrity pins and anonymous CORS mode to
   every third-party Bootstrap, jQuery, and fullPage.js resource.
 - Added rendered-page and dependency-free contracts for the exact CDN
