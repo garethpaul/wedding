@@ -64,6 +64,20 @@ describe('loading express', function () {
       .expect(200);
   });
 
+  it('denies unused browser capabilities', async function testPermissionsPolicy() {
+    const policy = 'camera=(), geolocation=(), microphone=()';
+
+    await request(app)
+      .get('/')
+      .expect('Permissions-Policy', policy)
+      .expect(200);
+
+    await request(app)
+      .get('/static/css/main.less')
+      .expect('Permissions-Policy', policy)
+      .expect(200);
+  });
+
   it('sets a content security policy for page assets', async function testContentSecurityPolicy() {
     await request(app)
       .get('/')

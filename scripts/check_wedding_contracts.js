@@ -27,6 +27,7 @@ const modernizationPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-weddi
 const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-inline-script-removal.md');
 const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-image-accessibility.md');
 const deploymentRetirementPlanPath = path.join(root, 'docs', 'plans', '2026-06-12-wedding-deployment-credential-retirement.md');
+const permissionsPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-permissions-policy.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -102,6 +103,8 @@ assert(appSource.includes('maxAge: 31536000'), 'HSTS maxAge must be one year in 
 assert(!appSource.includes('maxAge: 31536000000'), 'HSTS maxAge must not use millisecond-style values');
 assert(appSource.includes('includeSubDomains: true'), 'HSTS must include subdomains with the documented option spelling');
 assert(appSource.indexOf('app.use(helmet({') < appSource.indexOf("app.use('/static'"), 'Helmet must run before static assets');
+assert(appSource.includes("res.set('Permissions-Policy', 'camera=(), geolocation=(), microphone=()')"), 'Express must deny unused browser capabilities');
+assert(appSource.indexOf("res.set('Permissions-Policy'") < appSource.indexOf("app.use('/static'"), 'Permissions-Policy must cover static assets and routed pages');
 assert(
   appSource.includes("express.static(path.join(__dirname, 'public'))") ||
     appSource.includes('express.static(path.join(__dirname, "public"))'),
@@ -124,6 +127,12 @@ assert(specSource.includes('Cross-Origin-Resource-Policy'), 'tests must assert m
 assert(specSource.includes('X-DNS-Prefetch-Control'), 'tests must assert DNS prefetch control on routed pages');
 assert(specSource.includes('X-Frame-Options'), 'tests must assert frameguard on routed pages');
 assert(specSource.includes('Referrer-Policy'), 'tests must assert referrer policy on routed pages');
+assert(specSource.includes(".expect('Permissions-Policy', policy)"), 'tests must assert Permissions-Policy responses');
+const permissionsPolicyTest = specSource
+  .split('async function testPermissionsPolicy()', 2)[1]
+  .split('\n  });', 1)[0];
+assert(permissionsPolicyTest.includes(".get('/')"), 'Permissions-Policy tests must cover routed pages');
+assert(permissionsPolicyTest.includes(".get('/static/css/main.less')"), 'Permissions-Policy tests must cover static assets');
 assert(specSource.includes('Content-Security-Policy'), 'tests must assert content security policy on routed pages');
 assert(specSource.includes("script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com"), 'tests must assert the CSP script directive without unsafe-inline');
 assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
@@ -203,5 +212,6 @@ assertCompletedPlan(modernizationPlanPath, 'wedding Node modernization');
 assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
 assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
 assertCompletedPlan(deploymentRetirementPlanPath, 'wedding deployment credential retirement');
+assertCompletedPlan(permissionsPolicyPlanPath, 'wedding permissions policy');
 
 console.log('wedding contracts passed');

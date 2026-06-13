@@ -97,6 +97,9 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 ## Maintenance Notes
 
+- See `docs/plans/2026-06-13-wedding-permissions-policy.md` for the
+  least-privilege browser capability policy on pages and static assets.
+
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
 - See `docs/plans/2026-06-08-wedding-express-hardening.md` for the current
