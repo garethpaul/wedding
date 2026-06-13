@@ -27,6 +27,7 @@ Priority:
   third-party tracking loaders
 - Keep Content Security Policy coverage aligned with required static CDN and
   map dependencies
+- Pin every third-party CDN script and stylesheet with Subresource Integrity
 - Keep CSP form submissions restricted to the site origin
 - Retain App Engine metadata as history without restoring Travis deployment
 - Keep the Node.js dependency graph maintained, locked, and audited

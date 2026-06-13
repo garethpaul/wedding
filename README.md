@@ -53,7 +53,8 @@ The lockfile provides reproducible installs for local verification and CI.
   coverage, and the npm test suite when `app/node_modules` is installed. CSP
   coverage includes the `form-action 'self'` directive. Template checks also
   enforce document language, mobile viewport metadata, and alternative text for
-  every active image.
+  every active image. Third-party CDN tags must match the reviewed URL-to-SHA-384
+  Subresource Integrity allowlist and use anonymous CORS mode.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
@@ -99,6 +100,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 - See `docs/plans/2026-06-13-wedding-permissions-policy.md` for the
   least-privilege browser capability policy on pages and static assets.
+- See `docs/plans/2026-06-13-wedding-cdn-subresource-integrity.md` for exact
+  SHA-384 pins on every third-party CDN script and stylesheet.
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.

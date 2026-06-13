@@ -1,6 +1,6 @@
 # Wedding CDN Subresource Integrity
 
-Status: In Progress
+Status: Completed
 
 ## Problem
 
@@ -21,11 +21,14 @@ trusted by the page.
 
 ## Verification
 
-- Verify each recorded digest against a freshly fetched exact URL.
-- Run the focused rendered-page SRI test.
-- Run the full `make check` gate locally and from an external working
-  directory.
-- Run `npm audit --omit=dev` and the full audit when available.
-- Reject hostile mutations for removed or altered hashes, missing CORS mode,
-  unpinned tags, and stale plan status.
-- Run `git diff --check`, artifact review, and focused secret review.
+- All five recorded SHA-384 digests matched independently refetched exact URLs;
+  each resource also returned permissive cross-origin response headers.
+- The focused rendered-page SRI test passed.
+- The full `make check` gate passed all 20 Supertest cases and dependency-free
+  contracts locally and from an external working directory.
+- `npm audit --omit=dev` and the full 111-package audit both reported zero
+  vulnerabilities.
+- Eight hostile mutations were rejected for removed or altered hashes, a
+  weakened algorithm, missing CORS mode, an unpinned tag, removed rendered
+  coverage, and stale plan status.
+- `git diff --check`, artifact review, and focused secret review passed.

@@ -44,6 +44,9 @@ Helpful reports include:
   scripts, analytics loaders, or executable registry widgets. CSP also bounds
   the OpenStreetMap embed and keeps form submissions restricted to the site
   origin.
+- Every allowed third-party script and stylesheet carries a reviewed SHA-384
+  Subresource Integrity value with anonymous CORS mode. CDN URL or asset updates
+  must refresh the digest and verification evidence together.
 
 ## Service and API Notes
 
