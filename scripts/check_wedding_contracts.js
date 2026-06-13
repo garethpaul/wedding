@@ -28,6 +28,7 @@ const inlineScriptPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-weddin
 const accessibilityPlanPath = path.join(root, 'docs', 'plans', '2026-06-10-wedding-image-accessibility.md');
 const deploymentRetirementPlanPath = path.join(root, 'docs', 'plans', '2026-06-12-wedding-deployment-credential-retirement.md');
 const permissionsPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-permissions-policy.md');
+const subresourceIntegrityPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-cdn-subresource-integrity.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const appSource = fs.readFileSync(appPath, 'utf8');
 const specSource = fs.readFileSync(specPath, 'utf8');
@@ -134,6 +135,7 @@ const permissionsPolicyTest = specSource
 assert(permissionsPolicyTest.includes(".get('/')"), 'Permissions-Policy tests must cover routed pages');
 assert(permissionsPolicyTest.includes(".get('/static/css/main.less')"), 'Permissions-Policy tests must cover static assets');
 assert(specSource.includes('Content-Security-Policy'), 'tests must assert content security policy on routed pages');
+assert(specSource.includes('pins every third-party CDN resource with subresource integrity'), 'tests must cover rendered CDN integrity metadata');
 assert(specSource.includes("script-src 'self' https://cdnjs.cloudflare.com https://code.jquery.com https://maxcdn.bootstrapcdn.com"), 'tests must assert the CSP script directive without unsafe-inline');
 assert(specSource.includes("frame-src https://www.openstreetmap.org"), 'tests must assert the CSP frame directive');
 assert(specSource.includes("form-action 'self'"), 'tests must assert the CSP form-action directive');
@@ -147,6 +149,23 @@ assert(!templateSource.includes('google-analytics.com'), 'templates must not loa
 assert(!templateSource.includes('widget.zola.com'), 'templates must not load the Zola widget script');
 assert(templateSource.includes('src="/static/js/less.js"'), 'templates must use the checked-in Less compiler');
 assert(templateSource.includes('src="/static/js/site.js"'), 'templates must load local site initialization');
+const expectedCdnIntegrity = new Map([
+  ['https://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css', 'sha384-pdapHxIh7EYuwy6K7iE41uXVxGCXY0sAjBzaElYGJUrzwodck3Lx6IE2lA0rFREo'],
+  ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.css', 'sha384-7iwtIAfJcdmOE1v8ooJt9VseRUH/H1orBncarhY6Gc4DwFqdGMZmsKB3qL4W/uKW'],
+  ['https://code.jquery.com/jquery-2.1.4.min.js', 'sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC'],
+  ['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js', 'sha384-pPttEvTHTuUJ9L2kCoMnNqCRcaMPMVMsWVO+RLaaaYDmfSP5//dP6eKRusbPcqhZ'],
+  ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.js', 'sha384-hhNjiSNhqsiYAL+l31KyzcTGAYraOrVCwtxxKCi6Tq8Go3PMns99n1fJfcqFuGmq']
+]);
+const externalResourceTags = activeTemplateSource.match(/<(?:link|script)\b[^>]+https:\/\/[^>]+>/gi) || [];
+assert(externalResourceTags.length === expectedCdnIntegrity.size, 'templates must keep exactly the reviewed external CDN resources');
+for (const [url, integrity] of expectedCdnIntegrity) {
+  const matchingTags = externalResourceTags.filter((tag) => tag.includes(url));
+  assert(matchingTags.length === 1, `CDN resource must appear exactly once: ${url}`);
+  assert(matchingTags[0].includes(`integrity="${integrity}"`), `CDN resource must keep reviewed integrity: ${url}`);
+  assert(matchingTags[0].includes('crossorigin="anonymous"'), `CDN resource must use anonymous CORS mode: ${url}`);
+}
+assert(externalResourceTags.every((tag) => /\bintegrity="sha384-[A-Za-z0-9+/]+={0,2}"/.test(tag)), 'every external CDN tag must use SHA-384 integrity');
+assert(externalResourceTags.every((tag) => /\bcrossorigin="anonymous"/.test(tag)), 'every external CDN tag must use anonymous CORS mode');
 assert(activeTemplateSource.includes('<html lang="en">'), 'templates must declare the document language');
 assert(activeTemplateSource.includes('<meta name="viewport" content="width=device-width, initial-scale=1">'), 'templates must include mobile viewport metadata');
 const imageTags = activeTemplateSource.match(/<img\b[^>]*>/gi) || [];
@@ -213,5 +232,6 @@ assertCompletedPlan(inlineScriptPlanPath, 'wedding inline script removal');
 assertCompletedPlan(accessibilityPlanPath, 'wedding image accessibility');
 assertCompletedPlan(deploymentRetirementPlanPath, 'wedding deployment credential retirement');
 assertCompletedPlan(permissionsPolicyPlanPath, 'wedding permissions policy');
+assertCompletedPlan(subresourceIntegrityPlanPath, 'wedding CDN subresource integrity');
 
 console.log('wedding contracts passed');

@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-13
+
+- Added reviewed SHA-384 Subresource Integrity pins and anonymous CORS mode to
+  every third-party Bootstrap, jQuery, and fullPage.js resource.
+- Added rendered-page and dependency-free contracts for the exact CDN
+  URL-to-digest allowlist.
+
 ## 2026-06-12
 
 - Removed the obsolete Travis decrypt/deploy pipeline and its tracked encrypted

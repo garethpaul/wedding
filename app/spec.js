@@ -110,6 +110,37 @@ describe('loading express', function () {
       .expect(200);
   });
 
+  it('pins every third-party CDN resource with subresource integrity', async function testCdnIntegrity() {
+    const expectedResources = [
+      ['https://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css', 'sha384-pdapHxIh7EYuwy6K7iE41uXVxGCXY0sAjBzaElYGJUrzwodck3Lx6IE2lA0rFREo'],
+      ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.css', 'sha384-7iwtIAfJcdmOE1v8ooJt9VseRUH/H1orBncarhY6Gc4DwFqdGMZmsKB3qL4W/uKW'],
+      ['https://code.jquery.com/jquery-2.1.4.min.js', 'sha384-R4/ztc4ZlRqWjqIuvf6RX5yb/v90qNGx6fS48N0tRxiGkqveZETq72KgDVJCp2TC'],
+      ['https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js', 'sha384-pPttEvTHTuUJ9L2kCoMnNqCRcaMPMVMsWVO+RLaaaYDmfSP5//dP6eKRusbPcqhZ'],
+      ['https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/2.9.0/jquery.fullPage.min.js', 'sha384-hhNjiSNhqsiYAL+l31KyzcTGAYraOrVCwtxxKCi6Tq8Go3PMns99n1fJfcqFuGmq']
+    ];
+
+    await request(app)
+      .get('/')
+      .expect(function assertCdnIntegrity(response) {
+        var externalTags = response.text.match(/<(?:link|script)\b[^>]+https:\/\/[^>]+>/gi) || [];
+        if (externalTags.length !== expectedResources.length) {
+          throw new Error('every external resource must be covered by the SRI allowlist');
+        }
+        expectedResources.forEach(function assertResource(resource) {
+          var tag = externalTags.find(function findResource(candidate) {
+            return candidate.includes(resource[0]);
+          });
+          if (!tag || !tag.includes('integrity="' + resource[1] + '"')) {
+            throw new Error('missing expected integrity for ' + resource[0]);
+          }
+          if (!tag.includes('crossorigin="anonymous"')) {
+            throw new Error('missing anonymous CORS mode for ' + resource[0]);
+          }
+        });
+      })
+      .expect(200);
+  });
+
   it('renders accessible image alternatives and document metadata', async function testAccessibilityMetadata() {
     await request(app)
       .get('/')
