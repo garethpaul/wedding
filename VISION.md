@@ -34,10 +34,11 @@ Priority:
 - Keep the Node.js dependency graph maintained, locked, and audited
 - Keep document metadata and image alternatives accessible without duplicating
   nearby navigation labels
+- Keep reproducible local setup, generated CSS, browser smoke checks, and the
+  non-deployment boundary explicit
 
 Next priorities:
 
-- Add setup notes for local development
 - Require a newly provisioned external identity before any future deployment
 - Review historical HTTP outbound links in event templates
 - Decide whether the site is archived or still deployable

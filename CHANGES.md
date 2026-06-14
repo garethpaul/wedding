@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-14
+
+- Added a reproducible local development guide covering Node versions, the
+  nested package, lockfile install, deterministic CSS, verification, local
+  routes, browser smoke checks, privacy, and the non-deployment boundary.
+
 ## 2026-06-13
 
 - Replaced the browser-side Less compiler with deterministic build-time CSS,
