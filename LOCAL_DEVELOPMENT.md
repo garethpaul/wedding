@@ -75,4 +75,3 @@ Local development and GitHub Actions do not deploy the site. `app/app.yaml` and
 Any future deployment requires a newly provisioned external identity, a separate
 reviewed workflow, and explicit owner authorization. Never restore the retired
 Travis credential archive, service-account files, or deployment commands.
-
