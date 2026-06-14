@@ -1,6 +1,6 @@
 NODE ?= node
 NPM ?= npm
-ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: lint test build verify check
 
