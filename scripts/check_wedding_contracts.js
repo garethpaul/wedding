@@ -31,6 +31,7 @@ const deploymentRetirementPlanPath = path.join(root, 'docs', 'plans', '2026-06-1
 const permissionsPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-permissions-policy.md');
 const subresourceIntegrityPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-cdn-subresource-integrity.md');
 const precompiledLessPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-precompiled-less-and-strict-style-csp.md');
+const makeRootProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-make-root-override-protection.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const layoutPath = path.join(templatesPath, 'layout.html');
 const lessSourcePath = path.join(root, 'app', 'public', 'css', 'main.less');
@@ -240,7 +241,10 @@ assert(workflowSource.includes('actions/checkout@df4cb1c069e1874edd31b4311f18841
 assert(workflowSource.includes('actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'), 'setup-node must use an immutable revision');
 assert(!workflowSource.includes('ubuntu-latest'), 'CI must not use a floating Ubuntu runner');
 const makefileSource = fs.readFileSync(path.join(root, 'Makefile'), 'utf8');
-assert(makefileSource.includes('ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must resolve the repository root');
+const makefileLines = new Set(makefileSource.split(/\r?\n/));
+assert(makefileLines.has('override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must protect the repository root');
+assert(makefileLines.has('NODE ?= node'), 'Makefile must preserve the Node command override');
+assert(makefileLines.has('NPM ?= npm'), 'Makefile must preserve the npm command override');
 assert(makefileSource.includes('"$(ROOT)/scripts/check_wedding_contracts.js"'), 'Makefile must use the rooted contract path');
 assert(makefileSource.includes('--prefix "$(ROOT)/app"'), 'Makefile must use the rooted npm project path');
 assert(makefileSource.includes('$(NPM) --prefix "$(ROOT)/app" run build'), 'Makefile build must precompile the stylesheet');
@@ -270,5 +274,6 @@ assertCompletedPlan(deploymentRetirementPlanPath, 'wedding deployment credential
 assertCompletedPlan(permissionsPolicyPlanPath, 'wedding permissions policy');
 assertCompletedPlan(subresourceIntegrityPlanPath, 'wedding CDN subresource integrity');
 assertCompletedPlan(precompiledLessPlanPath, 'wedding precompiled Less');
+assertCompletedPlan(makeRootProtectionPlanPath, 'wedding Make root override protection');
 
 console.log('wedding contracts passed');
