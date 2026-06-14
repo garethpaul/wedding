@@ -32,6 +32,8 @@ const permissionsPolicyPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-w
 const subresourceIntegrityPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-wedding-cdn-subresource-integrity.md');
 const precompiledLessPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-precompiled-less-and-strict-style-csp.md');
 const makeRootProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-make-root-override-protection.md');
+const localDevelopmentPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-local-development-guide.md');
+const localDevelopmentGuidePath = path.join(root, 'LOCAL_DEVELOPMENT.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const layoutPath = path.join(templatesPath, 'layout.html');
 const lessSourcePath = path.join(root, 'app', 'public', 'css', 'main.less');
@@ -275,5 +277,48 @@ assertCompletedPlan(permissionsPolicyPlanPath, 'wedding permissions policy');
 assertCompletedPlan(subresourceIntegrityPlanPath, 'wedding CDN subresource integrity');
 assertCompletedPlan(precompiledLessPlanPath, 'wedding precompiled Less');
 assertCompletedPlan(makeRootProtectionPlanPath, 'wedding Make root override protection');
+assertCompletedPlan(localDevelopmentPlanPath, 'wedding local development guide');
+
+function checkLocalDevelopmentGuide() {
+  const guideSource = fs.readFileSync(localDevelopmentGuidePath, 'utf8').replace(/\s+/g, ' ');
+  const readmeSource = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const visionSource = fs.readFileSync(path.join(root, 'VISION.md'), 'utf8');
+  const changesSource = fs.readFileSync(path.join(root, 'CHANGES.md'), 'utf8');
+  const contracts = [
+    'Use Node.js 20 or newer',
+    'GitHub Actions verifies Node.js 20, 22, and 24',
+    'package and lockfile live under `app/`',
+    'npm ci --prefix app',
+    'npm --prefix app run build',
+    'npm --prefix app test',
+    'npm audit --prefix app',
+    'make check',
+    'npm --prefix app run build npm --prefix app test npm audit --prefix app make check',
+    'app/public/css/main.less',
+    'app/public/css/main.css',
+    'Do not hand-edit generated CSS',
+    'npm --prefix app start',
+    'defaults to `8080`',
+    '`http://localhost:8080/`',
+    '`/song-requests`, and `/registry`',
+    'remain usable with a keyboard',
+    'The layout remains readable at narrow mobile and desktop widths',
+    'Do not attach private guest data',
+    'Local development and GitHub Actions do not deploy the site',
+    'historical metadata, not an active deployment workflow',
+    'Never restore the retired Travis credential archive',
+  ];
+  for (const contract of contracts) {
+    assert(guideSource.includes(contract), `local development guide must include ${contract}`);
+  }
+  assert(readmeSource.includes('See `LOCAL_DEVELOPMENT.md`'), 'README must link the local development guide');
+  assert(readmeSource.includes('docs/plans/2026-06-14-local-development-guide.md'), 'README must link the local development plan');
+  assert(visionSource.includes('Keep reproducible local setup, generated CSS, browser smoke checks'), 'VISION must preserve local setup guidance');
+  assert(changesSource.includes('reproducible local development guide'), 'CHANGES must record local development guidance');
+}
+
+const localDevelopmentGuideInvocation = ['checkLocalDevelopmentGuide', '();'].join('');
+assert(fs.readFileSync(__filename, 'utf8').includes(localDevelopmentGuideInvocation), 'local development guide contract must run');
+checkLocalDevelopmentGuide();
 
 console.log('wedding contracts passed');

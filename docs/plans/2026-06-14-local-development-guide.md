@@ -1,6 +1,6 @@
 # Wedding Local Development Guide
 
-## Status: Planned
+## Status: Completed
 
 ## Context
 
@@ -38,3 +38,22 @@ to a single start command.
   templates, routes, headers, workflows, or deployment metadata.
 - Do not restore deployment credentials or automation.
 - Do not merge or close stacked pull requests without owner authorization.
+
+## Work Completed
+
+- Added reproducible install, build, test, audit, full-gate, start, browser-smoke,
+  generated-file, privacy, and deployment-boundary guidance.
+- Linked the guide from repository documentation and made its requirements,
+  roadmap priority, checker registration, and completed plan mutation-sensitive.
+
+## Verification
+
+- Focused local-guide and completed-plan contracts passed.
+- `npm ci`, `npm audit`, CSS build, and repository/external `make check` passed.
+- Thirteen hostile local-guide mutations were rejected across runtime, package
+  path, install, build, test, start, generated files, privacy, browser smoke,
+  deployment, roadmap, registration, and plan status.
+- The 126-package lockfile install and zero-vulnerability audit passed; the CSS
+  build produced no diff, and artifact, credential, and exact-diff audits
+  passed. Hosted verification is recorded against the exact pull-request head
+  after push.

@@ -43,6 +43,9 @@ The lockfile provides reproducible installs for local verification and CI.
 ## Running or Using the Project
 
 - Run `npm --prefix app start` from the repository root, or `npm start` from `app/`.
+- See `LOCAL_DEVELOPMENT.md` for the supported Node lines, lockfile install,
+  deterministic CSS build, full verification sequence, local server behavior,
+  browser smoke checklist, and non-deployment boundary.
 
 ## Testing and Verification
 
@@ -110,6 +113,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   SHA-384 pins on every third-party CDN script and stylesheet.
 - See `docs/plans/2026-06-13-precompiled-less-and-strict-style-csp.md` for the
   deterministic CSS build and strict `style-src` contract.
+- See `docs/plans/2026-06-14-local-development-guide.md` for reproducible local
+  setup, verification, and browser-smoke guidance.
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
