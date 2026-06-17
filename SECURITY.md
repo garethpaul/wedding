@@ -59,6 +59,11 @@ For web services, APIs, sockets, or scraping workflows, prioritize reports invol
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
 
+The nested development dependency graph pins `form-data` 4.0.6 through
+Supertest/Superagent. Version 4.0.5 is not permitted because it is affected by
+GHSA-hmw2-7cc7-3qxx. Lockfile refreshes must retain the patched version and
+pass `npm audit --prefix app`.
+
 Do not add encrypted credential archives as a substitute for a secret manager.
 Future deployment identities must be newly provisioned, least-privilege, and
 provided to reviewed automation through provider-managed secret storage.

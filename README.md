@@ -73,6 +73,10 @@ The lockfile provides reproducible installs for local verification and CI.
 GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
 22, and 24. Concurrent runs for the same branch are cancelled when superseded.
 
+The lockfile pins development-only `form-data` 4.0.6, which contains the fix
+for GHSA-hmw2-7cc7-3qxx. Keep `npm audit --prefix app` green when refreshing
+the nested package lock.
+
 ## Deployment Status
 
 The repository does not contain an active deployment workflow. The retired

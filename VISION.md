@@ -32,6 +32,8 @@ Priority:
 - Keep CSP form submissions restricted to the site origin
 - Retain App Engine metadata as history without restoring Travis deployment
 - Keep the Node.js dependency graph maintained, locked, and audited
+- Keep the development-only multipart dependency on the patched `form-data`
+  4.0.6 floor
 - Keep document metadata and image alternatives accessible without duplicating
   nearby navigation labels
 - Keep reproducible local setup, generated CSS, browser smoke checks, and the

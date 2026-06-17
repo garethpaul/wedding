@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-17
+
+- Refreshed the development-only `form-data` lock entry from 4.0.5 to 4.0.6
+  to resolve GHSA-hmw2-7cc7-3qxx without changing direct dependencies or
+  runtime application code.
+- Added a fail-closed lockfile contract for the patched transitive version.
+
 ## 2026-06-14
 
 - Added a reproducible local development guide covering Node versions, the

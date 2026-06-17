@@ -230,6 +230,7 @@ assert(packageJson.scripts.build === 'node ../scripts/build_wedding_css.js', 'np
 assert(!packageJson.overrides, 'dependency overrides must not outlive the removed Mocha tree');
 assert(fs.existsSync(lockPath), 'npm installs must be reproducible through package-lock.json');
 assert(packageLock.packages['node_modules/less'].version === '4.6.4', 'lockfile must pin Less 4.6.4');
+assert(packageLock.packages['node_modules/form-data'].version === '4.0.6', 'lockfile must pin patched form-data 4.0.6');
 assert(workflowSource.includes('permissions:\n  contents: read'), 'CI permissions must be read-only');
 assert(workflowSource.includes('concurrency:'), 'CI must define concurrency');
 assert(workflowSource.includes('cancel-in-progress: true'), 'CI must cancel superseded runs');
