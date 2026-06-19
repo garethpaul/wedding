@@ -9,6 +9,8 @@
 - Replaced regex comment stripping in the static contract checker with a
   tested fail-closed parser and tightened removed-host checks to exact CSP
   source segments after post-merge CodeQL review.
+- Preserved the repository's legacy per-language CodeQL category so current
+  clean scans reconcile and close historical alerts from the same analysis.
 
 ## 2026-06-17
 
