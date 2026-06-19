@@ -12,6 +12,7 @@ const specPath = path.join(root, 'app', 'spec.js');
 const packagePath = path.join(root, 'app', 'package.json');
 const lockPath = path.join(root, 'app', 'package-lock.json');
 const workflowPath = path.join(root, '.github', 'workflows', 'check.yml');
+const codeqlWorkflowPath = path.join(root, '.github', 'workflows', 'codeql.yml');
 const siteScriptPath = path.join(root, 'app', 'public', 'js', 'site.js');
 const expressPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-express-hardening.md');
 const mapPlanPath = path.join(root, 'docs', 'plans', '2026-06-08-wedding-tokenless-map.md');
@@ -45,6 +46,7 @@ const specSource = fs.readFileSync(specPath, 'utf8');
 const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const packageLock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
 const workflowSource = fs.readFileSync(workflowPath, 'utf8');
+const codeqlWorkflowSource = fs.existsSync(codeqlWorkflowPath) ? fs.readFileSync(codeqlWorkflowPath, 'utf8') : '';
 const siteScriptSource = fs.readFileSync(siteScriptPath, 'utf8');
 const layoutSource = fs.readFileSync(layoutPath, 'utf8');
 const lessSource = fs.readFileSync(lessSourcePath, 'utf8');
@@ -217,6 +219,8 @@ assert(imageTags.filter((imageTag) => /\balt=""/i.test(imageTag)).length === 6, 
   assert(activeTemplateSource.includes(`alt="${alternativeText}"`), `story photo must retain alternative text: ${alternativeText}`);
 });
 assert(siteScriptSource.includes("$('#fullpage').fullpage({"), 'local site script must initialize fullPage navigation');
+assert(specSource.includes('uses HTTPS for every external visitor link'), 'tests must cover rendered visitor-link security');
+assert(!/href\s*=\s*(['"])http:\/\//i.test(activeTemplateSource), 'public templates must not contain plaintext external links');
 assert(packageJson.engines.node === '>=20', 'package must require Node.js 20 or newer');
 assert(packageJson.dependencies.express === '5.2.1', 'Express must use the current maintained release');
 assert(packageJson.dependencies.helmet === '8.2.0', 'Helmet must use the current maintained release');
@@ -241,8 +245,44 @@ assert(workflowSource.includes('npm ci --prefix app'), 'CI must install from the
 assert(workflowSource.includes('npm audit --prefix app'), 'CI must audit the dependency graph');
 assert(workflowSource.includes('run: make check'), 'CI must run the repository verification gate');
 assert(workflowSource.includes('actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10'), 'checkout must use an immutable revision');
+assert(workflowSource.includes('persist-credentials: false'), 'CI checkout must not persist credentials');
 assert(workflowSource.includes('actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'), 'setup-node must use an immutable revision');
 assert(!workflowSource.includes('ubuntu-latest'), 'CI must not use a floating Ubuntu runner');
+assert(codeqlWorkflowSource, 'CodeQL workflow must exist');
+assert(codeqlWorkflowSource.includes('permissions:\n  contents: read\n  security-events: write'), 'CodeQL must use least-privilege upload permissions');
+assert(codeqlWorkflowSource.includes('language: [actions, javascript-typescript]'), 'CodeQL must analyze actions and JavaScript');
+assert(codeqlWorkflowSource.includes('build-mode: none'), 'CodeQL must use no-build analysis');
+assert(codeqlWorkflowSource.includes('runs-on: ubuntu-24.04'), 'CodeQL must use a fixed Ubuntu runner');
+assert(codeqlWorkflowSource.includes('timeout-minutes: 10'), 'CodeQL must keep a finite timeout');
+assert(codeqlWorkflowSource.includes('workflow_dispatch:'), 'CodeQL must support manual dispatch');
+assert(codeqlWorkflowSource.includes('schedule:'), 'CodeQL must run on a schedule');
+assert(codeqlWorkflowSource.includes('persist-credentials: false'), 'CodeQL checkout must not persist credentials');
+assert(!codeqlWorkflowSource.includes('pull_request_target'), 'CodeQL must not execute pull-request code with target-branch privileges');
+
+function workflowActions(source) {
+  return [...source.matchAll(/^\s*uses:\s*([^\s#]+)/gm)].map((match) => match[1]);
+}
+
+assert(
+  JSON.stringify(workflowActions(workflowSource)) === JSON.stringify([
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'
+  ]),
+  'CI must use only the approved immutable actions'
+);
+assert(
+  JSON.stringify(workflowActions(codeqlWorkflowSource)) === JSON.stringify([
+    'actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10',
+    'github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e',
+    'github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e'
+  ]),
+  'CodeQL must use only the approved immutable actions'
+);
+assert(
+  JSON.stringify(fs.readdirSync(path.join(root, '.github', 'workflows')).filter((fileName) => /\.ya?ml$/.test(fileName)).sort()) ===
+    JSON.stringify(['check.yml', 'codeql.yml']),
+  'workflow inventory must contain only Check and CodeQL'
+);
 const makefileSource = fs.readFileSync(path.join(root, 'Makefile'), 'utf8');
 const makefileLines = new Set(makefileSource.split(/\r?\n/));
 assert(makefileLines.has('override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must protect the repository root');

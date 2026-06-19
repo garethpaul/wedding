@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-19
+
+- Replaced remaining plaintext visitor destinations with reviewed HTTPS links
+  and added rendered-route plus static regression coverage.
+- Added immutable-pinned, least-privilege CodeQL analysis for Actions and
+  JavaScript, and disabled checkout credential persistence in verification.
+
 ## 2026-06-17
 
 - Refreshed the development-only `form-data` lock entry from 4.0.5 to 4.0.6

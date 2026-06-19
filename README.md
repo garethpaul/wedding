@@ -71,7 +71,9 @@ The lockfile provides reproducible installs for local verification and CI.
   vulnerabilities.
 
 GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
-22, and 24. Concurrent runs for the same branch are cancelled when superseded.
+22, and 24. A separate least-privilege CodeQL workflow analyzes Actions and
+JavaScript sources. Both workflows pin actions to reviewed commits, avoid
+persisting checkout credentials, and cancel superseded runs.
 
 The lockfile pins development-only `form-data` 4.0.6, which contains the fix
 for GHSA-hmw2-7cc7-3qxx. Keep `npm audit --prefix app` green when refreshing
@@ -108,6 +110,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - Keep site-owned executable scripts local and same-origin. Templates must not
   contain inline scripts, analytics loaders, or executable registry widgets;
   legacy library scripts remain limited to explicit CSP CDN origins.
+- Keep visitor-facing external links on HTTPS. The route tests and static
+  contracts reject plaintext `http://` destinations in active templates.
 
 ## Maintenance Notes
 

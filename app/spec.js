@@ -161,6 +161,34 @@ describe('loading express', function () {
       .expect(200);
   });
 
+  it('uses HTTPS for every external visitor link', async function testExternalLinkSecurity() {
+    for (const route of ['/accomodation', '/explore']) {
+      await request(app)
+        .get(route)
+        .expect(function assertHttpsVisitorLinks(response) {
+          const plaintextLinks = response.text.match(/href=(['"])http:\/\/[^'"]+\1/gi) || [];
+          if (plaintextLinks.length !== 0) {
+            throw new Error(`${route} must not render plaintext external links`);
+          }
+        })
+        .expect(200);
+    }
+  });
+
+  it('uses the canonical Sundial Lodge destination', async function testSundialDestination() {
+    await request(app)
+      .get('/accomodation')
+      .expect(function assertSundialDestination(response) {
+        if (!response.text.includes('href="https://www.sundiallodge.com/"')) {
+          throw new Error('Sundial Lodge must use its current official destination');
+        }
+        if (response.text.includes('bookings.ihotelier.com/Sundial-Lodge')) {
+          throw new Error('Sundial Lodge must not use the retired booking endpoint');
+        }
+      })
+      .expect(200);
+  });
+
   it('renders accessible image alternatives and document metadata', async function testAccessibilityMetadata() {
     await request(app)
       .get('/')

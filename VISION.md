@@ -30,6 +30,7 @@ Priority:
 - Pin every third-party CDN script and stylesheet with Subresource Integrity
 - Precompile site-owned Less and keep `style-src` free of `unsafe-inline`
 - Keep CSP form submissions restricted to the site origin
+- Keep visitor-facing outbound links on HTTPS
 - Retain App Engine metadata as history without restoring Travis deployment
 - Keep the Node.js dependency graph maintained, locked, and audited
 - Keep the development-only multipart dependency on the patched `form-data`
@@ -42,7 +43,6 @@ Priority:
 Next priorities:
 
 - Require a newly provisioned external identity before any future deployment
-- Review historical HTTP outbound links in event templates
 - Decide whether the site is archived or still deployable
 
 Contribution rules:
