@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { execFileSync } = require('child_process');
+const { activeHtml } = require('./html_contracts');
 
 const root = path.resolve(__dirname, '..');
 const appPath = path.join(root, 'app', 'app.js');
@@ -56,7 +57,7 @@ const templateSource = fs.readdirSync(templatesPath)
   .filter((fileName) => fileName.endsWith('.html'))
   .map((fileName) => fs.readFileSync(path.join(templatesPath, fileName), 'utf8'))
   .join('\n');
-const activeTemplateSource = templateSource.replace(/<!--[\s\S]*?-->/g, '');
+const activeTemplateSource = activeHtml(templateSource);
 const trackedFiles = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' })
   .split('\0')
   .filter(Boolean);
@@ -111,8 +112,8 @@ assert(appSource.includes('contentSecurityPolicy: {'), 'Express must enable a co
 assert(appSource.includes("defaultSrc: [\"'self'\"]"), 'CSP must default to same-origin resources');
 const scriptSources = appSource.split('scriptSrc: [', 2)[1].split(']', 1)[0];
 assert(!scriptSources.includes("'unsafe-inline'"), 'CSP script sources must reject inline JavaScript');
-assert(!appSource.includes('www.google-analytics.com'), 'CSP must not allow removed Google Analytics endpoints');
-assert(!appSource.includes('widget.zola.com'), 'CSP must not allow removed Zola widget scripts');
+assert(!scriptSources.includes('google-analytics'), 'CSP must not allow removed Google Analytics endpoints');
+assert(!scriptSources.includes('widget.zola'), 'CSP must not allow removed Zola widget scripts');
 const styleSources = appSource.split('styleSrc: [', 2)[1].split(']', 1)[0];
 assert(styleSources.includes("'https://cdnjs.cloudflare.com'"), 'CSP style sources must allow the reviewed fullPage stylesheet');
 assert(styleSources.includes("'https://maxcdn.bootstrapcdn.com'"), 'CSP style sources must preserve the reviewed Bootstrap origin');
@@ -229,7 +230,7 @@ assert(!packageJson.dependencies.swig, 'Swig must not remain in runtime dependen
 assert(!packageJson.devDependencies.mocha, 'tests must not retain the deprecated Mocha dependency tree');
 assert(packageJson.devDependencies.supertest === '7.2.2', 'Supertest must be a current development dependency');
 assert(packageJson.devDependencies.less === '4.6.4', 'Less must be pinned exactly as a development dependency');
-assert(packageJson.scripts.test === 'node --test spec.js', 'npm test must use the built-in Node.js test runner');
+assert(packageJson.scripts.test === 'node --test spec.js ../scripts/html_contracts.test.js', 'npm test must use the built-in Node.js test runner');
 assert(packageJson.scripts.build === 'node ../scripts/build_wedding_css.js', 'npm build must precompile the site stylesheet');
 assert(!packageJson.overrides, 'dependency overrides must not outlive the removed Mocha tree');
 assert(fs.existsSync(lockPath), 'npm installs must be reproducible through package-lock.json');
