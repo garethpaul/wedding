@@ -60,6 +60,10 @@ styles, repository-root safety, and verification-only automation.
 - Exact implementation head `7104578b2d9606f49e95f6a90fc6780f7f6d47c5`
   passed Check push run `27851043107`, Check pull-request run `27851044448`,
   and CodeQL run `27851044431` for Actions and JavaScript/TypeScript.
+- Post-merge CodeQL identified two checker-only findings. Follow-up replaces
+  regex HTML-comment removal with a tested parser that rejects nested or
+  unterminated comments, and evaluates removed script hosts only within the
+  extracted CSP `scriptSrc` segment.
 
 ## Owner Actions
 

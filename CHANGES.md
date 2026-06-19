@@ -6,6 +6,9 @@
   and added rendered-route plus static regression coverage.
 - Added immutable-pinned, least-privilege CodeQL analysis for Actions and
   JavaScript, and disabled checkout credential persistence in verification.
+- Replaced regex comment stripping in the static contract checker with a
+  tested fail-closed parser and tightened removed-host checks to exact CSP
+  source segments after post-merge CodeQL review.
 
 ## 2026-06-17
 
