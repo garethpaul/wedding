@@ -1,6 +1,6 @@
 # Wedding Deep Review Consolidation
 
-Status: In Progress
+Status: Completed
 
 ## Scope
 
@@ -40,8 +40,26 @@ styles, repository-root safety, and verification-only automation.
 
 ## Verification
 
-- Record the final local, mutation, dependency-audit, history-scan, and hosted
-  results here after the exact consolidation head passes.
+- A clean `npm ci --prefix app --ignore-scripts` installed 127 locked packages,
+  and `npm audit --prefix app --audit-level=low` reported zero vulnerabilities.
+- Repository-root and external-directory `make check` passed all 23 route,
+  header, asset, SRI, accessibility, visitor-link, and 404 tests.
+- Rebuilding the tracked stylesheet produced byte-identical output.
+- All five CDN resources reproduced their committed SHA-384 values from fresh
+  downloads. All 34 external links completed on HTTPS; the official Sundial
+  replacement returned 200. Bot-protected sites returned 403/406, and the
+  personal Zola registry remained the only unresolved 404.
+- The current application rendered no form, registered no body-processing or
+  submission route, and rejected a synthetic `/song-requests` POST with 404.
+- Five hostile mutations were rejected: a plaintext visitor link, mutable
+  CodeQL action, vulnerable `form-data` lock entry, missing SRI value, and
+  caller-overridden Make root.
+- A redacted Gitleaks scan covered 123 commits and found only the historical
+  Mapbox location already tracked by GitHub secret-scanning alert #1. The
+  changed-file credential-pattern scan found no candidate.
+- Exact implementation head `7104578b2d9606f49e95f6a90fc6780f7f6d47c5`
+  passed Check push run `27851043107`, Check pull-request run `27851044448`,
+  and CodeQL run `27851044431` for Actions and JavaScript/TypeScript.
 
 ## Owner Actions
 
