@@ -64,6 +64,9 @@ styles, repository-root safety, and verification-only automation.
   regex HTML-comment removal with a tested parser that rejects nested or
   unterminated comments, and evaluates removed script hosts only within the
   extracted CSP `scriptSrc` segment.
+- The advanced workflow uses the prior `/language:<language>` analysis
+  categories so GitHub can reconcile historical default-branch alerts against
+  current fixed results instead of retaining stale category-specific records.
 
 ## Owner Actions
 

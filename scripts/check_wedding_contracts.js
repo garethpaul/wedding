@@ -258,6 +258,7 @@ assert(codeqlWorkflowSource.includes('timeout-minutes: 10'), 'CodeQL must keep a
 assert(codeqlWorkflowSource.includes('workflow_dispatch:'), 'CodeQL must support manual dispatch');
 assert(codeqlWorkflowSource.includes('schedule:'), 'CodeQL must run on a schedule');
 assert(codeqlWorkflowSource.includes('persist-credentials: false'), 'CodeQL checkout must not persist credentials');
+assert(codeqlWorkflowSource.includes('category: "/language:${{ matrix.language }}"'), 'CodeQL must preserve the legacy language category for alert reconciliation');
 assert(!codeqlWorkflowSource.includes('pull_request_target'), 'CodeQL must not execute pull-request code with target-branch privileges');
 
 function workflowActions(source) {
