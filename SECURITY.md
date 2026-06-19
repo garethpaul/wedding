@@ -32,6 +32,11 @@ Helpful reports include:
 - Review found file, document, data, or media parsing flows; changes in those areas should receive security-focused review before merge.
 - Review found shell execution, subprocess, or dynamic evaluation surfaces; changes in those areas should receive security-focused review before merge.
 - Review found infrastructure, deployment, proxy, or cloud configuration; changes in those areas should receive security-focused review before merge.
+- The maintained tree contains no deployment credential archive or active
+  deployment workflow. GitHub Actions is verification-only. The historical
+  encrypted Google Cloud archive remains in Git history, so provider-side
+  service-account revocation and Travis variable deletion remain owner actions
+  and must not be inferred from current-tree removal.
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
 - The Express baseline sends browser security headers before static assets,
   including a Content Security Policy that permits executable scripts only
@@ -39,6 +44,12 @@ Helpful reports include:
   scripts, analytics loaders, or executable registry widgets. CSP also bounds
   the OpenStreetMap embed and keeps form submissions restricted to the site
   origin.
+- Every allowed third-party script and stylesheet carries a reviewed SHA-384
+  Subresource Integrity value with anonymous CORS mode. CDN URL or asset updates
+  must refresh the digest and verification evidence together.
+- Site-owned Less is compiled to tracked CSS during the package build. The
+  browser receives neither a Less compiler nor inline styles, so `style-src`
+  does not permit `unsafe-inline`.
 
 ## Service and API Notes
 
@@ -47,6 +58,15 @@ For web services, APIs, sockets, or scraping workflows, prioritize reports invol
 ## Dependency and Supply Chain Security
 
 Dependency updates should come from trusted package managers and should keep lockfiles in sync when lockfiles exist. Do not commit credentials, private keys, tokens, generated secrets, or machine-local configuration. If a vulnerability depends on a compromised package, typosquatting risk, insecure transitive dependency, or unsafe build step, include the package name, affected version, and the path through which it is used.
+
+The nested development dependency graph pins `form-data` 4.0.6 through
+Supertest/Superagent. Version 4.0.5 is not permitted because it is affected by
+GHSA-hmw2-7cc7-3qxx. Lockfile refreshes must retain the patched version and
+pass `npm audit --prefix app`.
+
+Do not add encrypted credential archives as a substitute for a secret manager.
+Future deployment identities must be newly provisioned, least-privilege, and
+provided to reviewed automation through provider-managed secret storage.
 
 ## Safe Research Guidelines
 

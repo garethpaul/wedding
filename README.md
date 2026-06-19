@@ -43,6 +43,9 @@ The lockfile provides reproducible installs for local verification and CI.
 ## Running or Using the Project
 
 - Run `npm --prefix app start` from the repository root, or `npm start` from `app/`.
+- See `LOCAL_DEVELOPMENT.md` for the supported Node lines, lockfile install,
+  deterministic CSS build, full verification sequence, local server behavior,
+  browser smoke checklist, and non-deployment boundary.
 
 ## Testing and Verification
 
@@ -50,41 +53,76 @@ The lockfile provides reproducible installs for local verification and CI.
   security, download protection, obsolete XSS-auditor disabling, modern
   cross-origin isolation, and referrer policy
   headers, DNS prefetch control, one-year HSTS max-age, Content Security Policy
-  coverage, and the npm test suite when `app/node_modules` is installed. CSP
+  coverage, the deterministic precompiled stylesheet, and the npm test suite
+  when `app/node_modules` is installed. CSP
   coverage includes the `form-action 'self'` directive. Template checks also
   enforce document language, mobile viewport metadata, and alternative text for
-  every active image.
+  every active image. Third-party CDN tags must match the reviewed URL-to-SHA-384
+  Subresource Integrity allowlist and use anonymous CORS mode.
 - `make check` runs the same verification gate.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
   `make check`.
+- `npm --prefix app run build` compiles `app/public/css/main.less` to the
+  tracked `app/public/css/main.css`; browser requests never execute Less.
 - `npm --prefix app test` runs the Node.js/Supertest suite after dependencies
   are installed.
 - `npm audit --prefix app` verifies the locked dependency graph has no known
   vulnerabilities.
 
 GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
-22, and 24. Concurrent runs for the same branch are cancelled when superseded.
+22, and 24. A separate least-privilege CodeQL workflow analyzes Actions and
+JavaScript sources. Both workflows pin actions to reviewed commits, avoid
+persisting checkout credentials, and cancel superseded runs.
+
+The lockfile pins development-only `form-data` 4.0.6, which contains the fix
+for GHSA-hmw2-7cc7-3qxx. Keep `npm audit --prefix app` green when refreshing
+the nested package lock.
+
+## Deployment Status
+
+The repository does not contain an active deployment workflow. The retired
+Travis pipeline and its encrypted Google Cloud credential archive were removed;
+GitHub Actions verifies the site but does not deploy it. App Engine metadata is
+retained only as historical application configuration. Any future deployment
+must use a newly provisioned identity stored outside Git, with least privilege
+and an explicit reviewed workflow.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
 ## Configuration and Secrets
 
 - Detected references to Mapbox, Twitter. Keep API keys, OAuth credentials, tokens, and account-specific values in local configuration only.
+- The removed encrypted archive remains in Git history. Repository cleanup does
+  not prove the historical Google Cloud key or Travis variables were revoked;
+  the owner must retire or rotate them through the providers.
 
 ## Security and Privacy Notes
 
-- Review changes touching authentication or token handling; examples from the scan include .travis.yml.
-- Review changes touching external API calls or credential-adjacent configuration; examples from the scan include .travis.yml, app/public/templates/our_story.html, app/public/templates/the_big_day.html.
-- Review changes touching network requests, sockets, or service endpoints; examples from the scan include .travis.yml, app/app.js, app/package.json, app/public/js/less.js, and 6 more.
-- Review changes touching file, media, JSON, XML, CSV, OCR, or data parsing; examples from the scan include .travis.yml, app/public/js/less.js.
-- Review changes touching shell execution, subprocess, or dynamic evaluation; examples from the scan include app/public/js/less.js.
-- Review changes touching infrastructure, proxy, cloud, or deployment configuration; examples from the scan include app/public/js/less.js.
+- Review changes touching authentication, credentials, network requests, or
+  deployment automation. The maintained tree must not restore Travis decrypt
+  commands, service-account JSON, or encrypted credential containers.
+- Review changes touching build tooling or dynamic evaluation. The pinned Less
+  compiler runs only during the package build with JavaScript evaluation
+  disabled.
+- Review changes touching infrastructure, proxy, cloud, or deployment
+  configuration; historical App Engine metadata remains deployment-adjacent.
 - Keep site-owned executable scripts local and same-origin. Templates must not
   contain inline scripts, analytics loaders, or executable registry widgets;
   legacy library scripts remain limited to explicit CSP CDN origins.
+- Keep visitor-facing external links on HTTPS. The route tests and static
+  contracts reject plaintext `http://` destinations in active templates.
 
 ## Maintenance Notes
+
+- See `docs/plans/2026-06-13-wedding-permissions-policy.md` for the
+  least-privilege browser capability policy on pages and static assets.
+- See `docs/plans/2026-06-13-wedding-cdn-subresource-integrity.md` for exact
+  SHA-384 pins on every third-party CDN script and stylesheet.
+- See `docs/plans/2026-06-13-precompiled-less-and-strict-style-csp.md` for the
+  deterministic CSS build and strict `style-src` contract.
+- See `docs/plans/2026-06-14-local-development-guide.md` for reproducible local
+  setup, verification, and browser-smoke guidance.
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.

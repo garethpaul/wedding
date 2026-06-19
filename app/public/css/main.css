@@ -1,0 +1,113 @@
+/* source-sha256: 08e2eaf7b7ae14f8bf336e256d80658c9877178f2d4b1d389cfaa55ca96f3e9a */
+/* MAIN CSS FILE */
+@font-face {
+  font-family: 'FeltThat';
+  src: url('/static/fonts/32214F_0_0.eot');
+  src: url('/static/fonts/32214F_0_0.eot?#iefix') format('embedded-opentype'), url('/static/fonts/32214F_0_0.woff2') format('woff2'), url('/static/fonts/32214F_0_0.woff') format('woff'), url('/static/fonts/32214F_0_0.ttf') format('truetype');
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  font-family: "FeltThat";
+}
+.starter-template h1 {
+  font-size: 76px;
+  margin-top: 0px;
+}
+.starter-template .lead {
+  font-size: 36px;
+  margin-bottom: 0px;
+}
+.main-cards h2 {
+  text-align: center;
+}
+.main-cards img {
+  width: 100%;
+}
+.story-cards {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.story-cards img {
+  width: 200px;
+}
+.activity h2,
+.restaurant h2,
+.coffee h2,
+.fitness h2,
+.golf h2 {
+  font-size: 15px;
+}
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+.hotel {
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 25%;
+  float: left;
+}
+.hotel p {
+  font-size: 12px;
+}
+.hotel .detail p {
+  font-size: 11px;
+}
+.transportation ul,
+.flights ul {
+  width: 100%;
+}
+.transportation ul li,
+.flights ul li {
+  display: inline-block;
+  width: 200px;
+  text-align: center;
+}
+.col-xs-15,
+.col-sm-15,
+.col-md-15,
+.col-lg-15 {
+  position: relative;
+  min-height: 1px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+.col-xs-15 {
+  width: 20%;
+  float: left;
+}
+@media (min-width: 768px) {
+  .col-sm-15 {
+    width: 20%;
+    float: left;
+  }
+}
+@media (min-width: 992px) {
+  .col-md-15 {
+    width: 20%;
+    float: left;
+  }
+}
+@media (min-width: 1200px) {
+  .col-lg-15 {
+    width: 20%;
+    float: left;
+  }
+}
+.main-cards .card:hover {
+  opacity: 0.3;
+}
+.main-cards .card a {
+  color: black;
+}
+.main-cards .card a:hover {
+  color: black;
+  text-decoration: none;
+}
+.main-cards .card a h2 {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}

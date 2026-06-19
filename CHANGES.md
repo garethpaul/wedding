@@ -1,5 +1,45 @@
 # Changes
 
+## 2026-06-19
+
+- Replaced remaining plaintext visitor destinations with reviewed HTTPS links
+  and added rendered-route plus static regression coverage.
+- Added immutable-pinned, least-privilege CodeQL analysis for Actions and
+  JavaScript, and disabled checkout credential persistence in verification.
+
+## 2026-06-17
+
+- Refreshed the development-only `form-data` lock entry from 4.0.5 to 4.0.6
+  to resolve GHSA-hmw2-7cc7-3qxx without changing direct dependencies or
+  runtime application code.
+- Added a fail-closed lockfile contract for the patched transitive version.
+
+## 2026-06-14
+
+- Added a reproducible local development guide covering Node versions, the
+  nested package, lockfile install, deterministic CSS, verification, local
+  routes, browser smoke checks, privacy, and the non-deployment boundary.
+
+## 2026-06-13
+
+- Replaced the browser-side Less compiler with deterministic build-time CSS,
+  pinned `less@4.6.4`, and removed `unsafe-inline` from `style-src`.
+- Added source-digest, layout, dependency, runtime, and hostile-mutation
+  contracts for the tracked compiled stylesheet.
+- Added reviewed SHA-384 Subresource Integrity pins and anonymous CORS mode to
+  every third-party Bootstrap, jQuery, and fullPage.js resource.
+- Added rendered-page and dependency-free contracts for the exact CDN
+  URL-to-digest allowlist.
+
+## 2026-06-12
+
+- Removed the obsolete Travis decrypt/deploy pipeline and its tracked encrypted
+  Google Cloud credential archive without rewriting repository history.
+- Added static contracts and ignore rules that reject restored credential
+  containers, extracted service-account files, and legacy deployment commands.
+- Documented that GitHub Actions is verification-only and that provider-side
+  key and Travis-variable retirement remains an explicit owner action.
+
 ## 2026-06-10
 
 - Added English document-language and mobile viewport metadata, decorative

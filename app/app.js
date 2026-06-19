@@ -26,7 +26,6 @@ app.use(helmet({
             ],
             styleSrc: [
                   "'self'",
-                  "'unsafe-inline'",
                   'https://cdnjs.cloudflare.com',
                   'https://maxcdn.bootstrapcdn.com',
                   'https://netdna.bootstrapcdn.com'
@@ -45,6 +44,11 @@ app.use(helmet({
             includeSubDomains: true
       }
 }));
+
+app.use((req, res, next) => {
+  res.set('Permissions-Policy', 'camera=(), geolocation=(), microphone=()');
+  next();
+});
 
 // Utilize middleware for serving files from public dir via /static
 app.use('/static', express.static(path.join(__dirname, 'public')));
