@@ -2,9 +2,11 @@
 
 ## 2026-06-21
 
-- Bound checkout credential-isolation contracts to the canonical checkout step
-  in both verification workflows and added hostile writable, missing-block, and
-  decoy-only mutation coverage.
+- Bound checkout credential-isolation contracts to the only canonical checkout
+  step in each verification workflow and added hostile writable,
+  missing-block, decoy-only, duplicate, and additional-checkout coverage.
+- Restored CodeQL's workflow-qualified analysis categories after the prior
+  `/language:*` override prevented pull-request alert reconciliation.
 
 ## 2026-06-19
 
@@ -15,8 +17,9 @@
 - Replaced regex comment stripping in the static contract checker with a
   tested fail-closed parser and tightened removed-host checks to exact CSP
   source segments after post-merge CodeQL review.
-- Preserved the repository's legacy per-language CodeQL category so current
-  clean scans reconcile and close historical alerts from the same analysis.
+- Attempted to preserve the repository's legacy per-language CodeQL category;
+  the June 21 follow-up corrects that category to GitHub's workflow-qualified
+  configuration identity.
 
 ## 2026-06-17
 

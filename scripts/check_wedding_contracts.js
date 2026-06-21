@@ -67,6 +67,8 @@ const checkoutCredentialIsolationBlock = [
   '        with:',
   '          persist-credentials: false'
 ].join('\n');
+const checkoutActionReference = 'actions/checkout@';
+const checkoutCredentialSetting = 'persist-credentials:';
 
 function assert(condition, message) {
   if (!condition) {
@@ -75,7 +77,9 @@ function assert(condition, message) {
 }
 
 function checkoutCredentialsAreIsolated(workflow) {
-  return workflow.split(checkoutCredentialIsolationBlock).length === 2;
+  return workflow.split(checkoutCredentialIsolationBlock).length === 2
+    && workflow.split(checkoutActionReference).length === 2
+    && workflow.split(checkoutCredentialSetting).length === 2;
 }
 
 function checkCheckoutCredentialIsolationContract() {
@@ -95,6 +99,23 @@ function checkCheckoutCredentialIsolationContract() {
         + "\n      - run: echo 'persist-credentials: false'"
     ),
     'credential-isolation text outside checkout must be rejected'
+  );
+  assert(
+    !checkoutCredentialsAreIsolated(
+      canonical
+        + '\n      - uses: actions/checkout@'
+        + 'df4cb1c069e1874edd31b4311f1884172cec0e10'
+    ),
+    'a second checkout without isolation must be rejected'
+  );
+  assert(
+    !checkoutCredentialsAreIsolated(
+      canonical.replace(
+        '          persist-credentials: false',
+        '          persist-credentials: false\n          persist-credentials: true'
+      )
+    ),
+    'duplicate credential settings must be rejected'
   );
 }
 
@@ -290,7 +311,10 @@ assert(codeqlWorkflowSource.includes('timeout-minutes: 10'), 'CodeQL must keep a
 assert(codeqlWorkflowSource.includes('workflow_dispatch:'), 'CodeQL must support manual dispatch');
 assert(codeqlWorkflowSource.includes('schedule:'), 'CodeQL must run on a schedule');
 assert(checkoutCredentialsAreIsolated(codeqlWorkflowSource), 'CodeQL checkout must disable persisted credentials exactly once');
-assert(codeqlWorkflowSource.includes('category: "/language:${{ matrix.language }}"'), 'CodeQL must preserve the legacy language category for alert reconciliation');
+assert(
+  codeqlWorkflowSource.includes('category: ".github/workflows/codeql.yml:analyze/language:${{ matrix.language }}"'),
+  'CodeQL must preserve the workflow-qualified language category used by default-branch analysis'
+);
 assert(!codeqlWorkflowSource.includes('pull_request_target'), 'CodeQL must not execute pull-request code with target-branch privileges');
 
 function workflowActions(source) {

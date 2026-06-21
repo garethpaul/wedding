@@ -21,6 +21,10 @@ step with writable or default credential behavior.
 - Require that exact block once in each workflow.
 - Exercise writable credentials, a missing `with` block, and a decoy setting
   outside checkout as hostile contract mutations.
+- Reject a second checkout or duplicate credential setting that could override
+  the reviewed boundary.
+- Restore CodeQL's workflow-qualified category identity after the prior
+  `/language:*` override produced a neutral pull-request aggregate.
 - Document the binding in the README and change log.
 
 ## Verification
@@ -29,6 +33,9 @@ step with writable or default credential behavior.
 - `npm audit --prefix app --audit-level=low`
 - `make check` from the repository root and through the absolute Makefile from
   an external working directory
-- Hostile copies of each workflow with writable, missing, and decoy-only
-  credential settings fail at the intended checkout-isolation assertion
+- Hostile copies of each workflow with writable, missing, decoy-only,
+  duplicate, and additional-checkout credential settings fail at the intended
+  checkout-isolation assertion
+- Exact-head CodeQL analysis reports the workflow-qualified Actions and
+  JavaScript/TypeScript configurations without a neutral aggregate
 - `git diff --check` and repository integrity checks

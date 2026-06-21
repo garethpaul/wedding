@@ -74,8 +74,12 @@ GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
 22, and 24. A separate least-privilege CodeQL workflow analyzes Actions and
 JavaScript sources. Both workflows pin actions to reviewed commits, avoid
 persisting checkout credentials, and cancel superseded runs. The dependency-free
-contract checker binds that credential setting to each canonical checkout step,
-so unrelated text cannot mask a workflow regression.
+contract checker binds that credential setting to the only canonical checkout
+step in each workflow, so unrelated text, duplicate settings, or additional
+checkouts cannot mask a workflow regression. CodeQL keeps the
+workflow-qualified per-language categories used by default-branch analysis so
+pull-request alert reconciliation fails visibly if configuration identity
+drifts.
 
 The lockfile pins development-only `form-data` 4.0.6, which contains the fix
 for GHSA-hmw2-7cc7-3qxx. Keep `npm audit --prefix app` green when refreshing
