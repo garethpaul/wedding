@@ -49,6 +49,12 @@ assert_not_contains() {
   if grep -Fq "$needle" "$file"; then
     printf 'forbidden text found in %s\n' "$label" >&2
     return 1
+  else
+    status=$?
+    if [ "$status" -ne 1 ]; then
+      printf 'could not inspect %s\n' "$label" >&2
+      return 1
+    fi
   fi
 }
 
@@ -61,6 +67,12 @@ if assert_not_contains "dependency-skip assertion probe" "$FAKE_NPM" "$ASSERTION
   exit 1
 fi
 grep -Fq 'forbidden text found in dependency-skip assertion probe' "$TEMP_ROOT/forbidden-text-assertion.out"
+rm -f "$ASSERTION_PROBE"
+if assert_not_contains "missing dependency-skip assertion probe" "$FAKE_NPM" "$ASSERTION_PROBE" >"$TEMP_ROOT/missing-forbidden-text-assertion.out" 2>&1; then
+  printf 'forbidden-text assertion did not fail closed when its command log was missing\n' >&2
+  exit 1
+fi
+grep -Fq 'could not inspect missing dependency-skip assertion probe' "$TEMP_ROOT/missing-forbidden-text-assertion.out"
 
 run_case() {
   target=$1 mode=$2 output="$TEMP_ROOT/case.out"
