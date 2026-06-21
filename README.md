@@ -59,7 +59,9 @@ The lockfile provides reproducible installs for local verification and CI.
   enforce document language, mobile viewport metadata, and alternative text for
   every active image. Third-party CDN tags must match the reviewed URL-to-SHA-384
   Subresource Integrity allowlist and use anonymous CORS mode.
-- `make check` runs the same verification gate.
+- `make check` runs the same verification gate plus adversarial Make authority
+  tests for the repository root, Node/npm commands, shell, startup files, and
+  supported execution modes.
 - `node scripts/check_wedding_contracts.js` runs just the dependency-free route contracts.
 - Completed maintenance plans live under `docs/plans` and are checked by
   `make check`.
@@ -74,6 +76,8 @@ GitHub Actions runs the same gate on fixed Ubuntu 24.04 runners for Node.js 20,
 22, and 24. A separate least-privilege CodeQL workflow analyzes Actions and
 JavaScript sources. Both workflows pin actions to reviewed commits, avoid
 persisting checkout credentials, and cancel superseded runs.
+The Check workflow invokes `/usr/bin/make` so a caller-controlled executable
+cannot redirect the repository gate.
 
 The lockfile pins development-only `form-data` 4.0.6, which contains the fix
 for GHSA-hmw2-7cc7-3qxx. Keep `npm audit --prefix app` green when refreshing
@@ -123,6 +127,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   deterministic CSS build and strict `style-src` contract.
 - See `docs/plans/2026-06-14-local-development-guide.md` for reproducible local
   setup, verification, and browser-smoke guidance.
+- See `docs/plans/2026-06-21-make-authority-isolation.md` for the checked-in
+  Make, Node, npm, shell, and startup-file trust boundary.
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.

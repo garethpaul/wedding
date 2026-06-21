@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-21
+
+- Isolated repository verification from caller-controlled Make startup files,
+  shell state, execution modes, root overrides, and Node/npm expressions.
+- Added adversarial Make authority coverage and pinned hosted verification to
+  `/usr/bin/make` without changing the wedding application or credential history.
+
 ## 2026-06-19
 
 - Replaced remaining plaintext visitor destinations with reviewed HTTPS links
