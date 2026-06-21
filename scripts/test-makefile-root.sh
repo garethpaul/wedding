@@ -3,7 +3,7 @@ set -eu
 PATH=/usr/bin:/bin
 export PATH
 
-ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && /bin/pwd -P)
+ROOT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && /bin/pwd -P)
 TEMP_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/wedding-make-authority-XXXXXX")
 trap 'rm -rf "$TEMP_ROOT"' EXIT HUP INT TERM
 unset MAKEFILES MAKEFILE_LIST MAKEFLAGS MFLAGS MAKEOVERRIDES ROOT SHELL NODE NPM
@@ -15,8 +15,8 @@ AUTHORITY_PATH="$TEMP_ROOT/no-tools"
 LOG="$TEMP_ROOT/commands.log"
 SHELL_LOG="$TEMP_ROOT/shell.log"
 mkdir -p "$CONTROL_DIR" "$CHECKOUT/scripts" "$CHECKOUT/app/node_modules" "$ATTACKER_ROOT" "$AUTHORITY_PATH"
-CONTROL_DIR=$(CDPATH= cd -- "$CONTROL_DIR" && /bin/pwd -P)
-CHECKOUT=$(CDPATH= cd -- "$CHECKOUT" && /bin/pwd -P)
+CONTROL_DIR=$(CDPATH='' cd -- "$CONTROL_DIR" && /bin/pwd -P)
+CHECKOUT=$(CDPATH='' cd -- "$CHECKOUT" && /bin/pwd -P)
 MAKEFILE="$CHECKOUT/Makefile"
 cp "$ROOT_DIR/Makefile" "$MAKEFILE"
 
@@ -43,6 +43,24 @@ printf '%s\n' invoked >> '$SHELL_LOG'
 exec /bin/sh "\$@"
 EOF_SHELL
 chmod +x "$FAKE_SHELL"
+
+assert_not_contains() {
+  label=$1 needle=$2 file=$3
+  if grep -Fq "$needle" "$file"; then
+    printf 'forbidden text found in %s\n' "$label" >&2
+    return 1
+  fi
+}
+
+ASSERTION_PROBE="$TEMP_ROOT/forbidden-text-assertion.log"
+: >"$ASSERTION_PROBE"
+assert_not_contains "empty dependency-skip assertion probe" "$FAKE_NPM" "$ASSERTION_PROBE"
+printf '%s\n' "$FAKE_NPM" >"$ASSERTION_PROBE"
+if assert_not_contains "dependency-skip assertion probe" "$FAKE_NPM" "$ASSERTION_PROBE" >"$TEMP_ROOT/forbidden-text-assertion.out" 2>&1; then
+  printf 'forbidden-text assertion did not fail closed when the fake npm marker was present\n' >&2
+  exit 1
+fi
+grep -Fq 'forbidden text found in dependency-skip assertion probe' "$TEMP_ROOT/forbidden-text-assertion.out"
 
 run_case() {
   target=$1 mode=$2 output="$TEMP_ROOT/case.out"
@@ -167,10 +185,14 @@ fi
 
 rm -rf "$CHECKOUT/app/node_modules"; rm -f "$LOG"
 (cd "$CONTROL_DIR" && PATH="$AUTHORITY_PATH" WEDDING_COMMAND_LOG="$LOG" /usr/bin/make --no-print-directory -f "$MAKEFILE" test "NODE=$FAKE_NODE" "NPM=$FAKE_NPM") >"$TEMP_ROOT/skip-test.out" 2>&1
-grep -Fq 'Skipping npm test' "$TEMP_ROOT/skip-test.out"; grep -Fq "$FAKE_NODE" "$LOG"; ! grep -Fq "$FAKE_NPM" "$LOG"
+grep -Fq 'Skipping npm test' "$TEMP_ROOT/skip-test.out"
+grep -Fq "$FAKE_NODE" "$LOG"
+assert_not_contains "skipped npm test command log" "$FAKE_NPM" "$LOG"
 rm -f "$LOG"
 (cd "$CONTROL_DIR" && PATH="$AUTHORITY_PATH" WEDDING_COMMAND_LOG="$LOG" /usr/bin/make --no-print-directory -f "$MAKEFILE" build "NODE=$FAKE_NODE" "NPM=$FAKE_NPM") >"$TEMP_ROOT/skip-build.out" 2>&1
-grep -Fq 'Skipping CSS build' "$TEMP_ROOT/skip-build.out"; grep -Fq "$FAKE_NODE" "$LOG"; ! grep -Fq "$FAKE_NPM" "$LOG"
+grep -Fq 'Skipping CSS build' "$TEMP_ROOT/skip-build.out"
+grep -Fq "$FAKE_NODE" "$LOG"
+assert_not_contains "skipped CSS build command log" "$FAKE_NPM" "$LOG"
 
 cp "$FAKE_NODE" "$TEMP_ROOT/node"; cp "$FAKE_NPM" "$TEMP_ROOT/npm"; rm -f "$LOG"
 (cd "$CONTROL_DIR" && PATH="$TEMP_ROOT:/usr/bin:/bin" WEDDING_COMMAND_LOG="$LOG" /usr/bin/make --no-print-directory -f "$MAKEFILE" lint) >"$TEMP_ROOT/path-node.out" 2>&1
