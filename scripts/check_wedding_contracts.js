@@ -35,6 +35,7 @@ const subresourceIntegrityPlanPath = path.join(root, 'docs', 'plans', '2026-06-1
 const precompiledLessPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-precompiled-less-and-strict-style-csp.md');
 const makeRootProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-make-root-override-protection.md');
 const localDevelopmentPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-local-development-guide.md');
+const makeAuthorityPlanPath = path.join(root, 'docs', 'plans', '2026-06-21-make-authority-isolation.md');
 const localDevelopmentGuidePath = path.join(root, 'LOCAL_DEVELOPMENT.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const layoutPath = path.join(templatesPath, 'layout.html');
@@ -244,7 +245,7 @@ assert(workflowSource.includes('node-version: [20, 22, 24]'), 'CI must cover Nod
 assert(workflowSource.includes('workflow_dispatch:'), 'CI must support manual verification');
 assert(workflowSource.includes('npm ci --prefix app'), 'CI must install from the lockfile');
 assert(workflowSource.includes('npm audit --prefix app'), 'CI must audit the dependency graph');
-assert(workflowSource.includes('run: make check'), 'CI must run the repository verification gate');
+assert(workflowSource.includes('run: /usr/bin/make check'), 'CI must run the repository verification gate through the system Make');
 assert(workflowSource.includes('actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10'), 'checkout must use an immutable revision');
 assert(workflowSource.includes('persist-credentials: false'), 'CI checkout must not persist credentials');
 assert(workflowSource.includes('actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'), 'setup-node must use an immutable revision');
@@ -287,12 +288,35 @@ assert(
 );
 const makefileSource = fs.readFileSync(path.join(root, 'Makefile'), 'utf8');
 const makefileLines = new Set(makefileSource.split(/\r?\n/));
-assert(makefileLines.has('override ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))'), 'Makefile must protect the repository root');
 assert(makefileLines.has('NODE ?= node'), 'Makefile must preserve the Node command override');
 assert(makefileLines.has('NPM ?= npm'), 'Makefile must preserve the npm command override');
-assert(makefileSource.includes('"$(ROOT)/scripts/check_wedding_contracts.js"'), 'Makefile must use the rooted contract path');
-assert(makefileSource.includes('--prefix "$(ROOT)/app"'), 'Makefile must use the rooted npm project path');
-assert(makefileSource.includes('$(NPM) --prefix "$(ROOT)/app" run build'), 'Makefile build must precompile the stylesheet');
+assert(makefileLines.has('override NODE := $(value NODE)'), 'Makefile must freeze the literal Node value');
+assert(makefileLines.has('override NPM := $(value NPM)'), 'Makefile must freeze the literal npm value');
+assert(makefileLines.has('override SHELL := /bin/sh'), 'Makefile must protect the recipe shell');
+assert(makefileLines.has('override MAKEFILES :='), 'Makefile must clear inherited startup files');
+assert(makefileSource.includes('override ROOT := $(shell path='), 'Makefile must derive the canonical repository root');
+assert(makefileSource.includes("'$(REPOSITORY_NODE_LITERAL)' '$(REPOSITORY_ROOT_LITERAL)/scripts/check_wedding_contracts.js'"), 'Makefile must use protected Node and contract paths');
+assert(makefileSource.includes("'$(REPOSITORY_NPM_LITERAL)' --prefix '$(REPOSITORY_ROOT_LITERAL)/app' run build"), 'Makefile build must use the protected npm project path');
+assert(makefileSource.includes("'$(REPOSITORY_ROOT_LITERAL)/scripts/test-makefile-root.sh'"), 'Makefile must run authority regressions');
+const makeAuthorityHarnessSource = fs.readFileSync(path.join(root, 'scripts', 'test-makefile-root.sh'), 'utf8');
+assert(makeAuthorityHarnessSource.includes('Make authority tests passed: 30 target/root/shell cases'), 'Make authority harness must cover all six public targets');
+for (const contract of [
+  '${tool_name}-environment-syntax',
+  '${tool_name}-brace-environment-syntax',
+  'MAKEFILE_LIST must not be overridden',
+  'MAKEFILES must be empty',
+  'both : and :: entries',
+  'later-vars.mk',
+  'later-shell.mk',
+  'Skipping npm test',
+  'Skipping CSS build',
+  'PATH="$TEMP_ROOT:/usr/bin:/bin"',
+  'MAKEFLAGS=-n',
+  '--ignore-errors'
+]) {
+  assert(makeAuthorityHarnessSource.includes(contract), `Make authority harness must retain ${contract}`);
+}
+assert(makeAuthorityHarnessSource.includes('8 raw Make-syntax controls'), 'Make authority harness must reject parenthesized and braced Node/npm syntax');
 
 function assertCompletedPlan(planPath, label) {
   assert(fs.existsSync(planPath), `${label} plan must live under docs/plans`);
@@ -321,6 +345,7 @@ assertCompletedPlan(subresourceIntegrityPlanPath, 'wedding CDN subresource integ
 assertCompletedPlan(precompiledLessPlanPath, 'wedding precompiled Less');
 assertCompletedPlan(makeRootProtectionPlanPath, 'wedding Make root override protection');
 assertCompletedPlan(localDevelopmentPlanPath, 'wedding local development guide');
+assertCompletedPlan(makeAuthorityPlanPath, 'wedding Make authority isolation');
 
 function checkLocalDevelopmentGuide() {
   const guideSource = fs.readFileSync(localDevelopmentGuidePath, 'utf8').replace(/\s+/g, ' ');

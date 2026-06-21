@@ -36,4 +36,4 @@ jobs:
       - name: Audit dependencies
         run: npm audit --prefix app
       - name: Run verification
-        run: make check
+        run: /usr/bin/make check
