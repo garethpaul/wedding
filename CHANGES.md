@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-21
+
+- Bound checkout credential-isolation contracts to the canonical checkout step
+  in both verification workflows and added hostile writable, missing-block, and
+  decoy-only mutation coverage.
+
 ## 2026-06-19
 
 - Replaced remaining plaintext visitor destinations with reviewed HTTPS links

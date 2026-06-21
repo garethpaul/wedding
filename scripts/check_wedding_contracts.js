@@ -61,12 +61,44 @@ const activeTemplateSource = activeHtml(templateSource);
 const trackedFiles = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' })
   .split('\0')
   .filter(Boolean);
+const checkoutCredentialIsolationBlock = [
+  '      - name: Check out repository',
+  '        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3',
+  '        with:',
+  '          persist-credentials: false'
+].join('\n');
 
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
 }
+
+function checkoutCredentialsAreIsolated(workflow) {
+  return workflow.split(checkoutCredentialIsolationBlock).length === 2;
+}
+
+function checkCheckoutCredentialIsolationContract() {
+  const canonical = checkoutCredentialIsolationBlock;
+  assert(checkoutCredentialsAreIsolated(canonical), 'canonical checkout credential isolation must pass');
+  assert(
+    !checkoutCredentialsAreIsolated(canonical.replace('persist-credentials: false', 'persist-credentials: true')),
+    'writable checkout credentials must be rejected'
+  );
+  assert(
+    !checkoutCredentialsAreIsolated(canonical.replace('        with:\n', '')),
+    'a checkout step without its with block must be rejected'
+  );
+  assert(
+    !checkoutCredentialsAreIsolated(
+      canonical.replace('          persist-credentials: false', '')
+        + "\n      - run: echo 'persist-credentials: false'"
+    ),
+    'credential-isolation text outside checkout must be rejected'
+  );
+}
+
+checkCheckoutCredentialIsolationContract();
 
 const forbiddenDeploymentArtifacts = [
   /^\.travis\.ya?ml$/i,
@@ -246,7 +278,7 @@ assert(workflowSource.includes('npm ci --prefix app'), 'CI must install from the
 assert(workflowSource.includes('npm audit --prefix app'), 'CI must audit the dependency graph');
 assert(workflowSource.includes('run: make check'), 'CI must run the repository verification gate');
 assert(workflowSource.includes('actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10'), 'checkout must use an immutable revision');
-assert(workflowSource.includes('persist-credentials: false'), 'CI checkout must not persist credentials');
+assert(checkoutCredentialsAreIsolated(workflowSource), 'CI checkout must disable persisted credentials exactly once');
 assert(workflowSource.includes('actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e'), 'setup-node must use an immutable revision');
 assert(!workflowSource.includes('ubuntu-latest'), 'CI must not use a floating Ubuntu runner');
 assert(codeqlWorkflowSource, 'CodeQL workflow must exist');
@@ -257,7 +289,7 @@ assert(codeqlWorkflowSource.includes('runs-on: ubuntu-24.04'), 'CodeQL must use 
 assert(codeqlWorkflowSource.includes('timeout-minutes: 10'), 'CodeQL must keep a finite timeout');
 assert(codeqlWorkflowSource.includes('workflow_dispatch:'), 'CodeQL must support manual dispatch');
 assert(codeqlWorkflowSource.includes('schedule:'), 'CodeQL must run on a schedule');
-assert(codeqlWorkflowSource.includes('persist-credentials: false'), 'CodeQL checkout must not persist credentials');
+assert(checkoutCredentialsAreIsolated(codeqlWorkflowSource), 'CodeQL checkout must disable persisted credentials exactly once');
 assert(codeqlWorkflowSource.includes('category: "/language:${{ matrix.language }}"'), 'CodeQL must preserve the legacy language category for alert reconciliation');
 assert(!codeqlWorkflowSource.includes('pull_request_target'), 'CodeQL must not execute pull-request code with target-branch privileges');
 
