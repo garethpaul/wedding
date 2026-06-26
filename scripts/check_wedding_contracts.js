@@ -36,6 +36,7 @@ const precompiledLessPlanPath = path.join(root, 'docs', 'plans', '2026-06-13-pre
 const makeRootProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-make-root-override-protection.md');
 const localDevelopmentPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-local-development-guide.md');
 const makeAuthorityPlanPath = path.join(root, 'docs', 'plans', '2026-06-21-make-authority-isolation.md');
+const repositoryStatusPlanPath = path.join(root, 'docs', 'plans', '2026-06-25-wedding-local-only-status.md');
 const localDevelopmentGuidePath = path.join(root, 'LOCAL_DEVELOPMENT.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const layoutPath = path.join(templatesPath, 'layout.html');
@@ -346,6 +347,7 @@ assertCompletedPlan(precompiledLessPlanPath, 'wedding precompiled Less');
 assertCompletedPlan(makeRootProtectionPlanPath, 'wedding Make root override protection');
 assertCompletedPlan(localDevelopmentPlanPath, 'wedding local development guide');
 assertCompletedPlan(makeAuthorityPlanPath, 'wedding Make authority isolation');
+assertCompletedPlan(repositoryStatusPlanPath, 'wedding local-only repository status');
 
 function checkLocalDevelopmentGuide() {
   const guideSource = fs.readFileSync(localDevelopmentGuidePath, 'utf8').replace(/\s+/g, ' ');
@@ -385,8 +387,28 @@ function checkLocalDevelopmentGuide() {
   assert(changesSource.includes('reproducible local development guide'), 'CHANGES must record local development guidance');
 }
 
+function checkRepositoryStatus() {
+  const repositoryStatus = 'The maintained repository is a historical, local-only site. It is not currently deployable from this tree.';
+  for (const [label, source] of [
+    ['README', fs.readFileSync(path.join(root, 'README.md'), 'utf8')],
+    ['local development guide', fs.readFileSync(localDevelopmentGuidePath, 'utf8')],
+    ['VISION', fs.readFileSync(path.join(root, 'VISION.md'), 'utf8')],
+    ['SECURITY', fs.readFileSync(path.join(root, 'SECURITY.md'), 'utf8')],
+  ]) {
+    assert(source.replace(/\s+/g, ' ').includes(repositoryStatus), `${label} must state the local-only repository status`);
+  }
+  const visionSource = fs.readFileSync(path.join(root, 'VISION.md'), 'utf8').replace(/\s+/g, ' ');
+  const changesSource = fs.readFileSync(path.join(root, 'CHANGES.md'), 'utf8');
+  assert(visionSource.includes('historical App Engine metadata alone does not establish deployment readiness'), 'VISION must keep historical metadata separate from deployment readiness');
+  assert(changesSource.includes('historical, local-only'), 'CHANGES must record the repository status decision');
+}
+
 const localDevelopmentGuideInvocation = ['checkLocalDevelopmentGuide', '();'].join('');
 assert(fs.readFileSync(__filename, 'utf8').includes(localDevelopmentGuideInvocation), 'local development guide contract must run');
 checkLocalDevelopmentGuide();
+
+const repositoryStatusInvocation = ['checkRepositoryStatus', '();'].join('');
+assert(fs.readFileSync(__filename, 'utf8').includes(repositoryStatusInvocation), 'repository status contract must run');
+checkRepositoryStatus();
 
 console.log('wedding contracts passed');

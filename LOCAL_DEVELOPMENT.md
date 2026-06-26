@@ -70,6 +70,9 @@ data, personal browser state, credentials, or unreviewed location changes.
 
 ## Deployment Boundary
 
+The maintained repository is a historical, local-only site. It is not currently
+deployable from this tree.
+
 Local development and GitHub Actions do not deploy the site. `app/app.yaml` and
 `app/dispatch.yaml` are historical metadata, not an active deployment workflow.
 Any future deployment requires a newly provisioned external identity, a separate

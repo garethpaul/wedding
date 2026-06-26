@@ -37,6 +37,11 @@ Helpful reports include:
   encrypted Google Cloud archive remains in Git history, so provider-side
   service-account revocation and Travis variable deletion remain owner actions
   and must not be inferred from current-tree removal.
+
+- The maintained repository is a historical, local-only site. It is not
+  currently deployable from this tree. Any future reclassification requires
+  explicit owner authorization and a new security review of the identity,
+  secret storage, workflow permissions, and target infrastructure.
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
 - The Express baseline sends browser security headers before static assets,
   including a Content Security Policy that permits executable scripts only

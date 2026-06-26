@@ -10,6 +10,9 @@ metadata, Nunjucks templates, static assets, and security middleware.
 The goal is to preserve the event site while keeping personal information,
 retired deployment boundaries, and historical dependency choices explicit.
 
+The maintained repository is a historical, local-only site. It is not currently
+deployable from this tree.
+
 The current focus is:
 
 Priority:
@@ -32,6 +35,8 @@ Priority:
 - Keep CSP form submissions restricted to the site origin
 - Keep visitor-facing outbound links on HTTPS
 - Retain App Engine metadata as history without restoring Travis deployment
+- Keep the maintained tree local-only unless the owner explicitly authorizes a
+  newly provisioned identity and separately reviewed deployment workflow
 - Keep the Node.js dependency graph maintained, locked, and audited
 - Keep the development-only multipart dependency on the patched `form-data`
   4.0.6 floor
@@ -40,10 +45,10 @@ Priority:
 - Keep reproducible local setup, generated CSS, browser smoke checks, and the
   non-deployment boundary explicit
 
-Next priorities:
+Future reconsideration:
 
-- Require a newly provisioned external identity before any future deployment
-- Decide whether the site is archived or still deployable
+- Reclassify the site as deployable only through an explicit owner decision;
+  historical App Engine metadata alone does not establish deployment readiness
 
 Contribution rules:
 

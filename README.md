@@ -85,12 +85,13 @@ the nested package lock.
 
 ## Deployment Status
 
-The repository does not contain an active deployment workflow. The retired
-Travis pipeline and its encrypted Google Cloud credential archive were removed;
-GitHub Actions verifies the site but does not deploy it. App Engine metadata is
-retained only as historical application configuration. Any future deployment
-must use a newly provisioned identity stored outside Git, with least privilege
-and an explicit reviewed workflow.
+The maintained repository is a historical, local-only site. It is not currently
+deployable from this tree. The retired Travis pipeline and its encrypted Google
+Cloud credential archive were removed; GitHub Actions verifies the site but does
+not deploy it. App Engine metadata is retained only as historical application
+configuration. Changing this status requires explicit owner authorization, a
+newly provisioned identity stored outside Git with least privilege, and a
+separately reviewed deployment workflow.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
