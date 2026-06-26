@@ -54,9 +54,9 @@ tracked stylesheet byte-for-byte and retaining exact reproducible installs.
 - `$codex-review` was invoked against `origin/master` but OpenAI authentication
   returned HTTP 401 before analysis; an immutable manual review confirmed the
   local and PR heads matched and found no actionable issue.
-- Current-tree gitleaks passed. The history scan reports one pre-existing
-  generic-key finding in commit `45290ae`; GitHub secret scanning has no open
-  alert and this dependency-only diff adds no secret-like material.
+- Current-tree gitleaks passed. GitHub secret scanning still reports one open
+  historical Mapbox token alert created June 8, 2026; this dependency-only diff
+  adds no secret-like material and does not claim provider-side resolution.
 
 ### Bugs / findings
 
@@ -69,6 +69,8 @@ tracked stylesheet byte-for-byte and retaining exact reproducible installs.
   required before merge.
 - The Codex review helper cannot authenticate to the OpenAI API in this
   environment; no model finding was produced or silently ignored.
+- The pre-existing historical Mapbox token alert remains an owner/provider
+  rotation and resolution action outside this dependency-only PR.
 
 ### Next action
 
