@@ -1,5 +1,80 @@
 # Changes
 
+## 2026-06-26 13:38 PDT - P3 - Refresh the exact Less compiler pin
+
+### Summary
+
+Updated the build-only Less compiler from 4.6.4 to 4.6.7 while preserving the
+tracked stylesheet byte-for-byte and retaining exact reproducible installs.
+
+### Work completed
+
+- Pinned `less@4.6.7` in the nested manifest and lockfile.
+- Bound the reviewed registry integrity and `make-dir@5.1.0` resolution in the
+  dependency-free repository checker.
+- Confirmed the refreshed compiler produces no tracked CSS diff.
+- Removed the obsolete optional `pify` and `semver` transitive packages through
+  the upstream Less dependency refresh.
+
+### Threads
+
+- Started: none — the patch update was completed directly.
+- Continued: none.
+- Stopped: none.
+
+### Files changed
+
+- `app/package.json` and `app/package-lock.json` — update the exact compiler and
+  reviewed transitive graph.
+- `scripts/check_wedding_contracts.js` — pins the manifest, lockfile, tarball,
+  transitive helper, and completed plan.
+- `README.md`, `SECURITY.md`, `VISION.md`, and
+  `docs/plans/2026-06-26-less-4.6.7-refresh.md` — document scope and evidence.
+
+### Validation
+
+- Pre-update baseline — 27 Node tests passed, the CSS build was byte-identical,
+  and static contracts passed.
+- Post-update focused gate — 27 Node tests passed, `npm audit --prefix app`
+  reported zero vulnerabilities, and `npm outdated --prefix app` returned no
+  packages.
+- Host Node 18 emitted the expected package-engine warning; supported Node 20,
+  22, and 24 verification remains the authoritative full gate.
+- A local Node 20 gate initially ran before `app/node_modules` existed and
+  truthfully skipped tests/build; `npm outdated` reported the missing install.
+  After exact `npm ci`, the same gate passed all 27 tests and CSS generation,
+  with zero audit or outdated findings.
+- Disposable Node 20, 22, and 24 containers each passed `make check`, including
+  27 Node tests, deterministic CSS generation, static contracts, and all 30
+  Make authority cases.
+- An isolated hostile mutation of the Less tarball integrity failed on the
+  intended checker assertion, and `git diff --check` passed.
+- Hosted Node 20, 22, and 24 verification plus CodeQL Actions and JavaScript
+  analysis passed on PR #17.
+- `$codex-review` was invoked against `origin/master` but OpenAI authentication
+  returned HTTP 401 before analysis; an immutable manual review confirmed the
+  local and PR heads matched and found no actionable issue.
+- Current-tree gitleaks passed. The history scan reports one pre-existing
+  generic-key finding in commit `45290ae`; GitHub secret scanning has no open
+  alert and this dependency-only diff adds no secret-like material.
+
+### Bugs / findings
+
+- P3: the exact build compiler lagged the current patch release and retained
+  older optional directory-helper transitive packages.
+
+### Blockers
+
+- None for local implementation; hosted supported-runtime verification remains
+  required before merge.
+- The Codex review helper cannot authenticate to the OpenAI API in this
+  environment; no model finding was produced or silently ignored.
+
+### Next action
+
+- Re-run exact-head gates after this evidence-only amendment and merge only the
+  reviewed hosted-green head.
+
 ## 2026-06-25
 
 - Resolved the deployment-status roadmap ambiguity by classifying the maintained

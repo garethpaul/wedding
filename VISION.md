@@ -38,6 +38,8 @@ Priority:
 - Keep the maintained tree local-only unless the owner explicitly authorizes a
   newly provisioned identity and separately reviewed deployment workflow
 - Keep the Node.js dependency graph maintained, locked, and audited
+- Keep the build-time Less compiler exactly pinned to 4.6.7 with the reviewed
+  registry integrity and byte-identical generated CSS
 - Keep the development-only multipart dependency on the patched `form-data`
   4.0.6 floor
 - Keep document metadata and image alternatives accessible without duplicating

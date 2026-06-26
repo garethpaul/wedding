@@ -108,8 +108,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   deployment automation. The maintained tree must not restore Travis decrypt
   commands, service-account JSON, or encrypted credential containers.
 - Review changes touching build tooling or dynamic evaluation. The pinned Less
-  compiler runs only during the package build with JavaScript evaluation
-  disabled.
+  4.6.7 compiler runs only during the package build with JavaScript evaluation
+  disabled; its lock entry pins the reviewed registry tarball.
 - Review changes touching infrastructure, proxy, cloud, or deployment
   configuration; historical App Engine metadata remains deployment-adjacent.
 - Keep site-owned executable scripts local and same-origin. Templates must not

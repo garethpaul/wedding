@@ -37,6 +37,7 @@ const makeRootProtectionPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-
 const localDevelopmentPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-local-development-guide.md');
 const makeAuthorityPlanPath = path.join(root, 'docs', 'plans', '2026-06-21-make-authority-isolation.md');
 const repositoryStatusPlanPath = path.join(root, 'docs', 'plans', '2026-06-25-wedding-local-only-status.md');
+const lessPatchPlanPath = path.join(root, 'docs', 'plans', '2026-06-26-less-4.6.7-refresh.md');
 const localDevelopmentGuidePath = path.join(root, 'LOCAL_DEVELOPMENT.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const layoutPath = path.join(templatesPath, 'layout.html');
@@ -231,12 +232,14 @@ assert(packageJson.dependencies.nunjucks === '3.2.4', 'Nunjucks must replace aba
 assert(!packageJson.dependencies.swig, 'Swig must not remain in runtime dependencies');
 assert(!packageJson.devDependencies.mocha, 'tests must not retain the deprecated Mocha dependency tree');
 assert(packageJson.devDependencies.supertest === '7.2.2', 'Supertest must be a current development dependency');
-assert(packageJson.devDependencies.less === '4.6.4', 'Less must be pinned exactly as a development dependency');
+assert(packageJson.devDependencies.less === '4.6.7', 'Less must be pinned exactly as a development dependency');
 assert(packageJson.scripts.test === 'node --test spec.js ../scripts/html_contracts.test.js', 'npm test must use the built-in Node.js test runner');
 assert(packageJson.scripts.build === 'node ../scripts/build_wedding_css.js', 'npm build must precompile the site stylesheet');
 assert(!packageJson.overrides, 'dependency overrides must not outlive the removed Mocha tree');
 assert(fs.existsSync(lockPath), 'npm installs must be reproducible through package-lock.json');
-assert(packageLock.packages['node_modules/less'].version === '4.6.4', 'lockfile must pin Less 4.6.4');
+assert(packageLock.packages['node_modules/less'].version === '4.6.7', 'lockfile must pin Less 4.6.7');
+assert(packageLock.packages['node_modules/less'].integrity === 'sha512-o3UxHBPPVY1HtCXx15/z1NlknQiWyafRNbtLEv+6xFaDRI2g2xPKIH43do9dSwt8bGLTsjNSaifa48N3d6odsQ==', 'lockfile must pin the reviewed Less 4.6.7 tarball');
+assert(packageLock.packages['node_modules/make-dir'].version === '5.1.0', 'Less must resolve make-dir 5.1.0');
 assert(packageLock.packages['node_modules/form-data'].version === '4.0.6', 'lockfile must pin patched form-data 4.0.6');
 assert(workflowSource.includes('permissions:\n  contents: read'), 'CI permissions must be read-only');
 assert(workflowSource.includes('concurrency:'), 'CI must define concurrency');
@@ -348,6 +351,7 @@ assertCompletedPlan(makeRootProtectionPlanPath, 'wedding Make root override prot
 assertCompletedPlan(localDevelopmentPlanPath, 'wedding local development guide');
 assertCompletedPlan(makeAuthorityPlanPath, 'wedding Make authority isolation');
 assertCompletedPlan(repositoryStatusPlanPath, 'wedding local-only repository status');
+assertCompletedPlan(lessPatchPlanPath, 'wedding Less 4.6.7 refresh');
 
 function checkLocalDevelopmentGuide() {
   const guideSource = fs.readFileSync(localDevelopmentGuidePath, 'utf8').replace(/\s+/g, ' ');
