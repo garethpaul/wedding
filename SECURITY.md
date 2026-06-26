@@ -55,6 +55,8 @@ Helpful reports include:
 - Site-owned Less is compiled to tracked CSS during the package build. The
   browser receives neither a Less compiler nor inline styles, so `style-src`
   does not permit `unsafe-inline`.
+- The build pins Less 4.6.7 and its reviewed registry integrity value. Its
+  optional directory helper resolves to Node 18+ `make-dir` 5.1.0.
 
 ## Service and API Notes
 
