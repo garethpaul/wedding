@@ -40,6 +40,10 @@ tracked stylesheet byte-for-byte and retaining exact reproducible installs.
   packages.
 - Host Node 18 emitted the expected package-engine warning; supported Node 20,
   22, and 24 verification remains the authoritative full gate.
+- A local Node 20 gate initially ran before `app/node_modules` existed and
+  truthfully skipped tests/build; `npm outdated` reported the missing install.
+  After exact `npm ci`, the same gate passed all 27 tests and CSS generation,
+  with zero audit or outdated findings.
 - Disposable Node 20, 22, and 24 containers each passed `make check`, including
   27 Node tests, deterministic CSS generation, static contracts, and all 30
   Make authority cases.
@@ -50,6 +54,9 @@ tracked stylesheet byte-for-byte and retaining exact reproducible installs.
 - `$codex-review` was invoked against `origin/master` but OpenAI authentication
   returned HTTP 401 before analysis; an immutable manual review confirmed the
   local and PR heads matched and found no actionable issue.
+- Current-tree gitleaks passed. The history scan reports one pre-existing
+  generic-key finding in commit `45290ae`; GitHub secret scanning has no open
+  alert and this dependency-only diff adds no secret-like material.
 
 ### Bugs / findings
 
