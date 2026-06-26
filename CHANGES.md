@@ -1,5 +1,17 @@
 # Changes
 
+## 2026-06-25
+
+- Resolved the deployment-status roadmap ambiguity by classifying the maintained
+  repository as a historical, local-only site that is not currently deployable
+  from the tracked tree.
+- Required an explicit owner decision, newly provisioned least-privilege
+  identity, separate reviewed workflow, and renewed security review before any
+  future deployable reclassification.
+- Added test and static-contract coverage so README, local development, roadmap,
+  security, completed-plan, and change-history guidance cannot silently drift
+  back to an ambiguous deployment claim.
+
 ## 2026-06-21
 
 - Isolated repository verification from caller-controlled Make startup files,
