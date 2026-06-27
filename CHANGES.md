@@ -1,5 +1,87 @@
 # Changes
 
+## 2026-06-26 18:07 PDT - P1 - Preserve the historical Mapbox alert response
+
+### Summary
+
+Added an enforced owner-response boundary for the repository's open historical
+Mapbox secret alert without exposing the credential or claiming provider-side
+remediation that has not been verified.
+
+### Work completed
+
+- Required maintained guidance to keep the historical alert open until the
+  credential owner confirms provider-side revocation or rotation.
+- Added a dependency-free contract that rejects missing guidance and the stale
+  claim that GitHub secret scanning has no open alert.
+- Confirmed the affected historical template is tokenless in the current tree
+  while preserving the unresolved provider-side ownership boundary.
+
+### Threads
+
+- Started: none — the security evidence correction was completed directly.
+- Continued: none.
+- Stopped: none.
+
+### Files changed
+
+- `README.md`, `SECURITY.md`, and `VISION.md` — preserve the canonical owner
+  response and current repository posture.
+- `scripts/check_wedding_contracts.js` — enforces the guidance, stale-claim
+  rejection, invocation, and completed implementation plan.
+- `docs/plans/2026-06-26-historical-mapbox-alert-design.md` and
+  `docs/plans/2026-06-26-historical-mapbox-alert.md` — record the selected
+  fail-closed design and implementation evidence.
+- `CHANGES.md` — records this maintenance cycle and unresolved owner action.
+
+### Validation
+
+- Live GitHub secret-scanning evidence reported one open historical Mapbox
+  secret alert; its value was never printed or copied into the repository.
+- Current-tree inspection confirmed the historical template contains no Mapbox
+  credential or token-like replacement.
+- Red-first `make lint` failed on the missing canonical guidance before the
+  documentation correction was applied, then failed only on the deliberately
+  incomplete implementation plan.
+- An isolated completion candidate passed the static checker, 27 Node tests,
+  deterministic CSS generation, and JavaScript syntax validation.
+- Independent hostile mutations removing the canonical sentence from
+  `SECURITY.md` and `CHANGES.md` failed on the intended response-boundary
+  assertion.
+- In-tree and external-directory `make check` each passed all 30 Make authority
+  cases, the contract checker, 27 Node tests, and deterministic CSS generation.
+- `node --check scripts/check_wedding_contracts.js`, `git diff --check`, and
+  current-tree gitleaks passed with zero leaks.
+- Hosted Node 20, 22, and 24 verification plus CodeQL Actions and JavaScript
+  analysis passed on PR #19 at `f1bae6bff9ac466329f9b0a89ae670ae3fe3625d`;
+  the final documentation-only replacement head must repeat its required gates.
+- `$codex-review` was invoked against `origin/master` for that exact head, but
+  OpenAI authentication returned HTTP 401 before analysis; no model finding was
+  produced or silently ignored.
+
+### Bugs / findings
+
+- P1: the open alert had truthful prose in the latest change entry but no
+  enforced cross-document owner-response boundary, allowing future guidance to
+  drift or imply an unsupported provider-side resolution.
+
+### Blockers
+
+- The credential owner must verify Mapbox-side revocation or rotation before
+  the historical alert can be resolved; repository maintainers cannot infer it
+  from a tokenless current tree.
+- The Codex review helper cannot authenticate to the OpenAI API in this
+  environment; the goal's authentication-only exception applies.
+
+### Next action
+
+- Re-run the required hosted gates on this evidence-only replacement head,
+  verify its exact SHA, and merge only that green head while leaving the alert
+  open pending owner evidence.
+
+Historical Mapbox secret alerts must remain open until the credential owner
+verifies provider-side revocation or rotation.
+
 ## 2026-06-26 13:38 PDT - P3 - Refresh the exact Less compiler pin
 
 ### Summary

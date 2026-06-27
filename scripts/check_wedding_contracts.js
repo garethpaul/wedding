@@ -38,6 +38,7 @@ const localDevelopmentPlanPath = path.join(root, 'docs', 'plans', '2026-06-14-lo
 const makeAuthorityPlanPath = path.join(root, 'docs', 'plans', '2026-06-21-make-authority-isolation.md');
 const repositoryStatusPlanPath = path.join(root, 'docs', 'plans', '2026-06-25-wedding-local-only-status.md');
 const lessPatchPlanPath = path.join(root, 'docs', 'plans', '2026-06-26-less-4.6.7-refresh.md');
+const historicalMapboxAlertPlanPath = path.join(root, 'docs', 'plans', '2026-06-26-historical-mapbox-alert.md');
 const localDevelopmentGuidePath = path.join(root, 'LOCAL_DEVELOPMENT.md');
 const templatesPath = path.join(root, 'app', 'public', 'templates');
 const layoutPath = path.join(templatesPath, 'layout.html');
@@ -407,6 +408,20 @@ function checkRepositoryStatus() {
   assert(changesSource.includes('historical, local-only'), 'CHANGES must record the repository status decision');
 }
 
+function checkHistoricalMapboxAlertResponse() {
+  const guidance = 'Historical Mapbox secret alerts must remain open until the credential owner verifies provider-side revocation or rotation.';
+  for (const [label, source] of [
+    ['README', fs.readFileSync(path.join(root, 'README.md'), 'utf8')],
+    ['VISION', fs.readFileSync(path.join(root, 'VISION.md'), 'utf8')],
+    ['SECURITY', fs.readFileSync(path.join(root, 'SECURITY.md'), 'utf8')],
+    ['CHANGES', fs.readFileSync(path.join(root, 'CHANGES.md'), 'utf8')],
+  ]) {
+    assert(source.replace(/\s+/g, ' ').includes(guidance), `${label} must preserve the historical Mapbox alert response boundary`);
+  }
+  const changesSource = fs.readFileSync(path.join(root, 'CHANGES.md'), 'utf8');
+  assert(!changesSource.includes('GitHub secret scanning has no open\n  alert'), 'CHANGES must not claim the historical Mapbox alert is closed');
+}
+
 const localDevelopmentGuideInvocation = ['checkLocalDevelopmentGuide', '();'].join('');
 assert(fs.readFileSync(__filename, 'utf8').includes(localDevelopmentGuideInvocation), 'local development guide contract must run');
 checkLocalDevelopmentGuide();
@@ -414,5 +429,10 @@ checkLocalDevelopmentGuide();
 const repositoryStatusInvocation = ['checkRepositoryStatus', '();'].join('');
 assert(fs.readFileSync(__filename, 'utf8').includes(repositoryStatusInvocation), 'repository status contract must run');
 checkRepositoryStatus();
+
+const historicalMapboxAlertInvocation = ['checkHistoricalMapboxAlertResponse', '();'].join('');
+assert(fs.readFileSync(__filename, 'utf8').includes(historicalMapboxAlertInvocation), 'historical Mapbox alert response contract must run');
+checkHistoricalMapboxAlertResponse();
+assertCompletedPlan(historicalMapboxAlertPlanPath, 'wedding historical Mapbox alert response');
 
 console.log('wedding contracts passed');

@@ -37,6 +37,8 @@ Helpful reports include:
   encrypted Google Cloud archive remains in Git history, so provider-side
   service-account revocation and Travis variable deletion remain owner actions
   and must not be inferred from current-tree removal.
+- Historical Mapbox secret alerts must remain open until the credential owner
+  verifies provider-side revocation or rotation.
 
 - The maintained repository is a historical, local-only site. It is not
   currently deployable from this tree. Any future reclassification requires
