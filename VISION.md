@@ -19,6 +19,8 @@ Priority:
 
 - Preserve the static route structure and templates
 - Keep deployment credentials out of Git, including encrypted archives
+- Historical Mapbox secret alerts must remain open until the credential owner
+  verifies provider-side revocation or rotation.
 - Avoid exposing unnecessary implementation headers
 - Keep baseline browser security headers enabled before static assets
 - Keep HSTS max-age explicit and bounded to one year

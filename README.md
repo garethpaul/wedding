@@ -101,6 +101,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - The removed encrypted archive remains in Git history. Repository cleanup does
   not prove the historical Google Cloud key or Travis variables were revoked;
   the owner must retire or rotate them through the providers.
+- Historical Mapbox secret alerts must remain open until the credential owner
+  verifies provider-side revocation or rotation.
 
 ## Security and Privacy Notes
 
